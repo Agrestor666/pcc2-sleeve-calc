@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="https://pcc2-sleeve-calc.w3spaces.com/SleeveCalc.html">
+    <title>ASME PCC-2 — Sleeve Type B Calculator</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">
+</head>
+<body>
+
+<header>
+    <h1>ASME PCC-2 &mdash; Sleeve Type B Thickness Calculator</h1>
+    <span class="badge">ASME B31.3</span>
+</header>
+
+<div class="app">
+
+    <!-- INPUT -->
+    <div class="card input-section">
+        <div class="card-title">Input Data</div>
+
+        <div class="form-group">
+            <div class="form-group-title"><span class="icon">&#9670;</span> Size of Defect</div>
+            <div class="field-row">
+                <div class="field">
+                    <label for="defect_s">Longitudinal s <span class="unit">[mm]</span></label>
+                    <input type="number" id="defect_s" min="1" step="1" placeholder="e.g. 150">
+                </div>
+                <div class="field">
+                    <label for="defect_c">Circumferential c <span class="unit">[mm]</span></label>
+                    <input type="number" id="defect_c" min="1" step="1" placeholder="e.g. 50">
+                </div>
+            </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="form-group">
+            <div class="form-group-title"><span class="icon">&#9679;</span> Predicted Sleeve Parameters and parent pipe details</div>
+            <div class="field-row">
+                <div class="field">
+                    <label for="thk">Thickness(sleeve) THK <span class="unit">[mm]</span></label>
+                    <input type="number" id="thk" min="0.1" step="any" placeholder="e.g. 12.7">
+                </div>
+                <div class="field">
+                    <label for="od">Outside Diameter(pipe) OD <span class="unit">[mm]</span></label>
+                    <input type="number" id="od" min="0.1" step="any" placeholder="e.g. 323.9">
+                </div>
+            </div>
+            <div class="field-row">
+                <div class="field full-width">
+                    <label for="gap">GAP <span class="unit">[mm]</span></label>
+                    <p class="field-note">Radial clearance between the sleeve bore and the carrier pipe outside diameter (annular gap, each side).</p>
+                    <input type="number" id="gap" min="0" step="any" placeholder="e.g. 0">
+                </div>
+            </div>
+            <div class="field-row">
+                <div class="field">
+                    <label for="corrosion_ca">Corrosion allowance CA <span class="unit">[mm]</span></label>
+                    <input type="number" id="corrosion_ca" min="0" step="any" placeholder="e.g. 0">
+                </div>
+                <div class="field">
+                    <label for="material">Material</label>
+                    <select id="material"></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="form-group">
+            <div class="form-group-title"><span class="icon">&#9650;</span> Process Data</div>
+            <div class="field-row">
+                <div class="field">
+                    <label for="mawp">MAWP / Design Pressure P <span class="unit">[bar]</span></label>
+                    <input type="number" id="mawp" min="0.1" step="any" placeholder="e.g. 40">
+                </div>
+                <div class="field">
+                    <label for="tmax">Design Temperature Tmax <span class="unit">[&deg;C]</span></label>
+                    <input type="number" id="tmax" step="1" placeholder="e.g. 200">
+                </div>
+            </div>
+            <div class="field-row" id="fieldGroupCh9" hidden>
+                <div class="field full-width">
+                    <p class="field-note">When <strong>P ≥ 690 bar</strong>, allowable stress <strong>S</strong> is taken from <strong>Table K-1</strong> (B31.3-2024, SI) for the selected material at design temperature <strong>Tmax</strong> (table in °C, stress in MPa; converted to bar for Eq.&nbsp;(34a): 1&nbsp;MPa&nbsp;=&nbsp;10&nbsp;bar).</p>
+                    <div id="k1StressDisplay" hidden></div>
+                </div>
+            </div>
+            <div id="fieldGroupCh2">
+            <div class="field-row">
+                <div class="field full-width">
+                    <p class="field-note">When <strong>P &lt; 690 bar</strong>, allowable stress <strong>S</strong> is taken from <strong>Table A-1</strong> (B31.3-2024, SI) for the selected material at design temperature <strong>Tmax</strong> (table in °C, stress in MPa; converted to bar for Chapter II: 1&nbsp;MPa&nbsp;=&nbsp;10&nbsp;bar).</p>
+                    <div id="a1StressDisplay" hidden></div>
+                </div>
+            </div>
+            <div class="field-row">
+                <div class="field full-width">
+                    <label for="coeff_y">Coefficient Y <span class="unit">[&mdash;]</span></label>
+                    <input type="number" id="coeff_y" min="0" step="any" value="0.4" placeholder="0.4">
+                    <p class="field-note">Default <strong>0.4</strong> matches ASME B31.3 Table 304.1.1 for <strong>ferritic</strong> steels at <strong>≤ 482&nbsp;°C</strong> (≤ 900&nbsp;°F). At higher temperatures, <strong>Y</strong> increases—edit per your edition.</p>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="form-group" id="fieldGroupCh2Weld">
+            <div class="form-group-title"><span class="icon">&#9674;</span> Weld Joint Efficiency</div>
+            <div class="field-row">
+                <div class="field">
+                    <label for="weld_e">Factor E</label>
+                    <select id="weld_e">
+                        <option value="0.8">0.80</option>
+                        <option value="1.0" selected>1.00</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" id="btnCalc" disabled>Run Sleeve THK Calculation</button>
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="card output-section">
+        <div class="card-title">Output Data</div>
+
+        <div class="info-row" id="pressureRegimeBanner" hidden></div>
+
+        <div class="formula-box" id="formulaCh2Box">
+            <div class="formula-title">ASME B31.3, Chapter II &mdash; Process Piping <span class="formula-regime">(P &lt; 690 bar)</span></div>
+            <div class="formula">
+                t =
+                <span class="frac">
+                    <span class="num">P &middot; D</span>
+                    <span class="den">2 &middot; (S &middot; E + P &middot; Y)</span>
+                </span>
+                <span class="formula-tail"> + CA</span>
+            </div>
+            <div class="formula-legend">
+                <span>CA</span> &ndash; corrosion allowance [mm]<br>
+                <span>P</span> &ndash; design pressure<br>
+                <span>D</span> &ndash; outside diameter of sleeve, <strong>D = OD + 2&middot;GAP + 2&middot;THK</strong><br>
+                <span>GAP</span> &ndash; radial clearance between sleeve bore and pipe OD [mm]<br>
+                <span>S</span> &ndash; allowable stress of sleeve material<br>
+                <span>E</span> &ndash; weld joint efficiency (0.80 or 1.00)<br>
+                <span>Y</span> &ndash; temperature coefficient (ASME B31.3 Table 304.1.1). Page default <strong>0.4</strong> is the usual value for <strong>ferritic</strong> steels at <strong>T ≤ 482&nbsp;°C</strong> (≤ 900&nbsp;°F), with other conditions per the code; change if your case differs.
+            </div>
+        </div>
+
+        <div class="formula-results" id="outputResultsCh2">
+            <div class="output-grid">
+                <div class="result-card">
+                    <div class="result-label" id="outThicknessLabelCh2">Required sleeve thickness (incl. CA)</div>
+                    <div class="result-value" id="outTminCh2">&mdash;</div>
+                    <div class="result-unit">mm</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Sleeve Length</div>
+                    <div class="result-value" id="outLCh2">&mdash;</div>
+                    <div class="result-unit">mm</div>
+                </div>
+            </div>
+
+            <div class="info-row" id="materialInfoCh2" style="display:none;">
+                <span>&#9432;</span>
+                <span id="materialInfoTextCh2"></span>
+            </div>
+
+            <div class="alert-thk" id="alertThkCh2" hidden>
+                <span class="alert-thk__icon">&#9888;</span>
+                <span id="alertThkTextCh2"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- PARALLEL: high-pressure formula (Ch. IX) -->
+    <div class="card parallel-section">
+        <div class="card-title">OUTPUT DATA &mdash; high pressure</div>
+        <div class="formula-box" id="formulaCh9Box">
+            <div class="formula-title">ASME B31.3, Chapter IX &mdash; High Pressure <span class="formula-regime">(P ≥ 690 bar)</span></div>
+            <div class="formula formula--ch9">
+                t =
+                <span class="formula-ch9-core">((D &minus; 2 &middot; CA) / 2) &middot; (1 &minus; exp(&minus;1.155 &middot; P / S))</span>
+                <span class="formula-tail"> + CA</span>
+            </div>
+            <div class="formula-legend">
+                <span>CA</span> &ndash; corrosion allowance [mm]<br>
+                <span>P</span> &ndash; design pressure<br>
+                <span>D</span> &ndash; outside diameter of sleeve, <strong>D = OD + 2&middot;GAP + 2&middot;THK</strong> [mm]<br>
+                <span>GAP</span> &ndash; radial clearance between sleeve bore and pipe OD [mm]<br>
+                <span>S</span> &ndash; allowable stress from Table K-1 (MPa at Tmax, converted to bar)
+            </div>
+        </div>
+
+        <div class="formula-results" id="outputResultsCh9" hidden>
+            <div class="output-grid">
+                <div class="result-card">
+                    <div class="result-label" id="outThicknessLabelCh9">Required sleeve thickness (incl. CA)</div>
+                    <div class="result-value" id="outTminCh9">&mdash;</div>
+                    <div class="result-unit">mm</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Sleeve Length</div>
+                    <div class="result-value" id="outLCh9">&mdash;</div>
+                    <div class="result-unit">mm</div>
+                </div>
+            </div>
+
+            <div class="info-row" id="materialInfoCh9" style="display:none;">
+                <span>&#9432;</span>
+                <span id="materialInfoTextCh9"></span>
+            </div>
+
+            <div class="alert-thk" id="alertThkCh9" hidden>
+                <span class="alert-thk__icon">&#9888;</span>
+                <span id="alertThkTextCh9"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOG -->
+    <div class="card log-section">
+        <div class="card-title">Calculation Log</div>
+        <div class="log-container" id="logContainer"></div>
+        <div class="log-actions">
+            <button class="btn btn-secondary" id="btnExportPng" disabled>Export to PNG</button>
+            <button class="btn btn-secondary" id="btnCopyLog" disabled>Copy to Clipboard</button>
+        </div>
+    </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
+<df-messenger
+  location="eu"
+  project-id="kaktus-chatbot"
+  agent-id="3aac0d86-6ebc-4d26-978a-ddd519b6ad6e"
+  language-code="en"
+  max-query-length="-1"
+  chat-icon="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2236%22%20height%3D%2236%22%20viewBox%3D%220%200%2036%2036%22%3E%3Crect%20x%3D%223%22%20y%3D%2216%22%20width%3D%2210%22%20height%3D%225%22%20rx%3D%222.5%22%20fill%3D%22%230d1117%22%2F%3E%3Crect%20x%3D%2223%22%20y%3D%2216%22%20width%3D%2210%22%20height%3D%225%22%20rx%3D%222.5%22%20fill%3D%22%230d1117%22%2F%3E%3Crect%20x%3D%2211%22%20y%3D%227%22%20width%3D%2214%22%20height%3D%2222%22%20rx%3D%223%22%20fill%3D%22%230d1117%22%2F%3E%3C%2Fsvg%3E">
+  <df-messenger-chat-bubble
+    chat-title="ASME PCC‑2 Assistant">
+  </df-messenger-chat-bubble>
+</df-messenger>
+<style>
+  /* Dialogflow Messenger — match styles.css dark theme (:root) */
+  df-messenger {
+    z-index: 999;
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+
+    --df-messenger-font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    --df-messenger-font-size: 14px;
+    --df-messenger-font-color: #e6edf3;
+    --df-messenger-primary-color: #58a6ff;
+    --df-messenger-focus-color: rgba(88, 166, 255, 0.35);
+    --df-messenger-focus-color-contrast: #e6edf3;
+
+    --df-messenger-chat-border: 1px solid #3d444d;
+    --df-messenger-chat-border-radius: 8px;
+    --df-messenger-chat-window-box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+
+    --df-messenger-chat-bubble-background: #58a6ff;
+    --df-messenger-chat-bubble-icon-color: #0d1117;
+    --df-messenger-chat-bubble-border: 1px solid rgba(255, 255, 255, 0.12);
+
+    --df-messenger-titlebar-background: #22272e;
+    --df-messenger-titlebar-border-bottom: 1px solid #3d444d;
+    --df-messenger-titlebar-font-color: #e6edf3;
+    --df-messenger-titlebar-title-font-weight: 600;
+
+    --df-messenger-chat-background: #1a1e24;
+    --df-messenger-chat-padding: 12px;
+
+    --df-messenger-message-bot-background: #2d333b;
+    --df-messenger-message-bot-font-color: #e6edf3;
+    --df-messenger-message-bot-border: 1px solid #3d444d;
+
+    --df-messenger-message-user-background: rgba(88, 166, 255, 0.16);
+    --df-messenger-message-user-font-color: #e6edf3;
+    --df-messenger-message-user-border: 1px solid rgba(88, 166, 255, 0.35);
+
+    --df-messenger-message-border-radius: 8px;
+
+    --df-messenger-message-bot-writing-background: #2d333b;
+    --df-messenger-message-bot-writing-font-color: #8b949e;
+
+    --df-messenger-input-background: #22272e;
+    /* Inner textarea was still #fff from default theme → invisible light text */
+    --df-messenger-input-box-background: #161b22;
+    --df-messenger-input-font-color: #e6edf3;
+    --df-messenger-input-font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    --df-messenger-input-border-top: 1px solid #3d444d;
+    --df-messenger-input-border: none;
+    --df-messenger-input-box-border: 1px solid #3d444d;
+    --df-messenger-input-box-focus-border: 2px solid #58a6ff;
+    --df-messenger-input-box-focus-padding: 15px 31px;
+    --df-messenger-input-box-border-radius: 6px;
+    --df-messenger-send-icon-color: #58a6ff;
+    --df-messenger-send-icon-color-hover: #79c0ff;
+    --df-messenger-send-icon-color-active: #79c0ff;
+
+    --df-messenger-chat-scroll-button-background: #58a6ff;
+    --df-messenger-chat-scroll-button-font-color: #0d1117;
+  }
+</style>
+
+<script src="table-a1.js"></script>
+<script src="table-k1.js"></script>
+<script src="materials.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
