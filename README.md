@@ -62,7 +62,7 @@ Copy **only these files** into the site root (same folder as `SleeveCalc.html`).
 | `favicon.svg` / `favicon.png` | optional |
 | `sitemap.xml`, `googleaab751f69310ca84.html` | optional |
 
-Do **not** upload: `tools/`, `A1.pdf`, `K1.pdf`, `README.md`, `CHANGELOG.md`.
+Do **not** upload: `tools/`, `tables/` (source PDFs only), `README.md`, `CHANGELOG.md`.
 
 ## Project structure
 
@@ -74,7 +74,7 @@ ASME PCC2/
 ├── type-b-sleeve-diagram.png Help modal schematic
 ├── materials.js              Legacy fixed S (deprecated)
 ├── favicon.svg, favicon.png
-├── A1.pdf, K1.pdf            Source PDFs (dev/OCR only — not for hosting)
+├── tables/                   A1.pdf, K1.pdf (dev/OCR only — not for hosting)
 ├── tools/                    Python OCR / table build (not for hosting)
 ├── sitemap.xml, googleaab751f69310ca84.html
 └── README.md

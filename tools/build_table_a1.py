@@ -15,7 +15,7 @@ import numpy as np
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-PDF = ROOT / "A1.pdf"
+PDF = ROOT / "tables" / "A1.pdf"
 OUT_JS = ROOT / "table-a1.js"
 OUT_JSON = ROOT / "tools" / "a1_stress_data.json"
 

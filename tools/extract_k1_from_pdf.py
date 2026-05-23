@@ -15,7 +15,7 @@ import numpy as np
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-PDF = ROOT / "K1.pdf"
+PDF = ROOT / "tables" / "K1.pdf"
 OUT = ROOT / "tools" / "k1_extracted.json"
 
 
