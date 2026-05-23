@@ -52,6 +52,9 @@ Copy **only these files** into the site root (same folder as `SleeveCalc.html`).
 | File | Required |
 |------|----------|
 | `SleeveCalc.html` | yes |
+| `constants.js` | yes |
+| `calc-core.js` | yes |
+| `stress-lookup.js` | yes (load before `table-a1.js` / `table-k1.js`) |
 | `app.js` | yes |
 | `i18n.js` | yes |
 | `styles.css` | yes |
@@ -69,8 +72,9 @@ Do **not** upload: `tools/`, `tables/` (source PDFs only), `README.md`, `CHANGEL
 ```
 ASME PCC2/
 ├── SleeveCalc.html           Main page
+├── constants.js, calc-core.js, stress-lookup.js  Shared constants / math / table lookup helpers
 ├── app.js, i18n.js, styles.css
-├── table-a1.js, table-k1.js  Table A-1 / K-1 lookup (runtime)
+├── table-a1.js, table-k1.js  Table A-1 / K-1 data + per-table lookup wiring (runtime)
 ├── type-b-sleeve-diagram.png Help modal schematic
 ├── materials.js              Legacy fixed S (deprecated)
 ├── favicon.svg, favicon.png

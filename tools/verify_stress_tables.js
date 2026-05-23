@@ -2,10 +2,14 @@
 const fs = require("fs");
 const path = require("path");
 const root = path.join(__dirname, "..");
+const lookupCore = fs.readFileSync(path.join(root, "stress-lookup.js"), "utf8");
 const a1 = fs.readFileSync(path.join(root, "table-a1.js"), "utf8");
 const k1 = fs.readFileSync(path.join(root, "table-k1.js"), "utf8");
 const ctx = new Function(
-    a1 + k1 + "; return { lookupA1Stress, lookupK1Stress, A1_BY_MATERIAL, K1_BY_MATERIAL };"
+    lookupCore +
+        a1 +
+        k1 +
+        "; return { lookupA1Stress, lookupK1Stress, A1_BY_MATERIAL, K1_BY_MATERIAL };"
 )();
 
 const materials = Object.keys(ctx.A1_BY_MATERIAL);

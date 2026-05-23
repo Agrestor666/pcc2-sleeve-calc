@@ -2,6 +2,8 @@
  * ASME B31.3-2024 Table A-1 — allowable stress vs temperature (SI).
  * Temperatures [°C], stresses [MPa]. Interpolation per Appendix A General Note (c).
  * Source: A1.pdf (B31.3-2024 Table A-1, SI units). MPa → bar (×10) for Chapter II.
+ *
+ * Requires `stress-lookup.js` before this script (`createB31StressLookup`, `interpolateStressMpa`).
  */
 const A1_TEMP_C = [40, 65, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375];
 
@@ -117,42 +119,7 @@ const A1_BY_MATERIAL = {
     },
 };
 
-const MPA_TO_BAR = 10;
-
-function interpolateStressMpa(mpaRow, tempGrid, tempC) {
-    if (!mpaRow || !tempGrid || tempGrid.length === 0) return null;
-    if (tempC <= tempGrid[0]) {
-        for (let i = 0; i < mpaRow.length; i++) {
-            if (mpaRow[i] != null) return mpaRow[i];
-        }
-        return null;
-    }
-    const lastIdx = tempGrid.length - 1;
-    if (tempC >= tempGrid[lastIdx]) {
-        for (let i = lastIdx; i >= 0; i--) {
-            if (mpaRow[i] != null) return mpaRow[i];
-        }
-        return null;
-    }
-    let loIdx = -1;
-    let hiIdx = -1;
-    for (let i = 0; i < tempGrid.length; i++) {
-        if (mpaRow[i] == null) continue;
-        if (tempGrid[i] <= tempC) loIdx = i;
-        if (tempGrid[i] >= tempC && hiIdx < 0) hiIdx = i;
-    }
-    if (loIdx < 0 && hiIdx < 0) return null;
-    if (loIdx < 0) return mpaRow[hiIdx];
-    if (hiIdx < 0) return mpaRow[loIdx];
-    if (loIdx === hiIdx) return mpaRow[loIdx];
-    const t0 = tempGrid[loIdx];
-    const t1 = tempGrid[hiIdx];
-    const s0 = mpaRow[loIdx];
-    const s1 = mpaRow[hiIdx];
-    const f = (tempC - t0) / (t1 - t0);
-    return s0 + f * (s1 - s0);
-}
-
+/** Interpolation for A-1 rows; uses interpolateStressMpa from stress-lookup.js (load order in HTML). */
 function interpolateA1Mpa(mpaRow, tempC) {
     return interpolateStressMpa(mpaRow, A1_TEMP_C, tempC);
 }
@@ -204,31 +171,9 @@ const A1_MATERIAL_FALLBACK = {
     ]
 };
 
-function lookupA1Stress(material, tempC) {
-    const chain = [material, ...(A1_MATERIAL_FALLBACK[material] || [])];
-    const tried = [];
-    for (const key of chain) {
-        tried.push(key);
-        const entry = A1_BY_MATERIAL[key];
-        if (!entry) continue;
-        const mpa = interpolateStressMpa(entry.mpa, A1_TEMP_C, tempC);
-        if (mpa == null || mpa <= 0) continue;
-        const baseNote = entry.note || "";
-        const logLine = key === material
-            ? `Table A-1: ${material} @ ${tempC} °C — ${baseNote}`
-            : `Table A-1: ${material} → przyjęto ${key} (zamiennik) @ ${tempC} °C — ${baseNote}`;
-        console.info("[S lookup]", logLine);
-        return {
-            mpa: Math.round(mpa * 1000) / 1000,
-            bar: Math.round(mpa * MPA_TO_BAR * 10) / 10,
-            tempC: Math.round(tempC * 10) / 10,
-            note: baseNote,
-            sourceMaterial: key,
-            requestedMaterial: material,
-            acceptedFrom: key === material ? "direct" : "fallback",
-            logLine
-        };
-    }
-    console.warn(`[S lookup] Table A-1: brak S dla ${material} @ ${tempC} °C (sprawdzono: ${tried.join(", ")})`);
-    return null;
-}
+const lookupA1Stress = createB31StressLookup({
+    tableId: "A-1",
+    byMaterial: A1_BY_MATERIAL,
+    tempGrid: A1_TEMP_C,
+    materialFallback: A1_MATERIAL_FALLBACK
+});

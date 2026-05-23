@@ -2,6 +2,8 @@
  * ASME B31.3-2024 Table K-1 — allowable stress vs temperature (SI).
  * Temperatures [°C], stresses [MPa]. Interpolation per Appendix K General Note (c).
  * Source: K1.pdf (B31.3-2024 Table K-1, SI units). MPa → bar (×10) for Eq. (34a).
+ *
+ * Requires `stress-lookup.js` before this script (`createB31StressLookup`, `interpolateStressMpa`).
  */
 const K1_TEMP_C = [40, 65, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375];
 
@@ -117,8 +119,7 @@ const K1_BY_MATERIAL = {
     },
 };
 
-/* MPA_TO_BAR (10) — defined in table-a1.js, loaded before this file */
-
+/** Interpolation for K-1 rows; uses interpolateStressMpa from stress-lookup.js (load order in HTML). */
 function interpolateMpa(mpaRow, tempC) {
     return interpolateStressMpa(mpaRow, K1_TEMP_C, tempC);
 }
@@ -184,31 +185,9 @@ const K1_MATERIAL_FALLBACK = {
     ]
 };
 
-function lookupK1Stress(material, tempC) {
-    const chain = [material, ...(K1_MATERIAL_FALLBACK[material] || [])];
-    const tried = [];
-    for (const key of chain) {
-        tried.push(key);
-        const entry = K1_BY_MATERIAL[key];
-        if (!entry) continue;
-        const mpa = interpolateStressMpa(entry.mpa, K1_TEMP_C, tempC);
-        if (mpa == null || mpa <= 0) continue;
-        const baseNote = entry.note || "";
-        const logLine = key === material
-            ? `Table K-1: ${material} @ ${tempC} °C — ${baseNote}`
-            : `Table K-1: ${material} → przyjęto ${key} (zamiennik) @ ${tempC} °C — ${baseNote}`;
-        console.info("[S lookup]", logLine);
-        return {
-            mpa: Math.round(mpa * 1000) / 1000,
-            bar: Math.round(mpa * MPA_TO_BAR * 10) / 10,
-            tempC: Math.round(tempC * 10) / 10,
-            note: baseNote,
-            sourceMaterial: key,
-            requestedMaterial: material,
-            acceptedFrom: key === material ? "direct" : "fallback",
-            logLine
-        };
-    }
-    console.warn(`[S lookup] Table K-1: brak S dla ${material} @ ${tempC} °C (sprawdzono: ${tried.join(", ")})`);
-    return null;
-}
+const lookupK1Stress = createB31StressLookup({
+    tableId: "K-1",
+    byMaterial: K1_BY_MATERIAL,
+    tempGrid: K1_TEMP_C,
+    materialFallback: K1_MATERIAL_FALLBACK
+});

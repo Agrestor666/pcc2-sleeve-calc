@@ -1,41 +1,33 @@
-/** Ch. II when P < 690 bar; Ch. IX Eq. (34a) when P ≥ 690 bar */
-const P_HP_THRESHOLD_BAR = 690;
-
-/** Semantic version — update with each release; see CHANGELOG.md */
-const APP_VERSION = "1.1.0";
-const CODE_BASIS = "ASME B31.3-2024 (Table A-1 / K-1, SI)";
-
-const REGIME = { CH2: "ch2", CH9: "ch9" };
-
+/**
+ * UI wiring and I/O. Loads after constants.js, calc-core.js, i18n, stress-lookup, table-a1, table-k1, materials.
+ */
 const $ = id => document.getElementById(id);
-const BASE_INPUT_IDS = ["defect_s", "defect_c", "thk", "od", "gap", "corrosion_ca", "mawp", "tmax"];
-const REF_INPUT_IDS = ["paz", "avis"];
 
-const LOG_RULE = "═══════════════════════════════════════════════";
-
-/* ── Regime helpers ── */
-
-function isHighPressure(P) {
-    return P >= P_HP_THRESHOLD_BAR;
-}
-
-function getRegime(P) {
-    if (isNaN(P)) return null;
-    return isHighPressure(P) ? REGIME.CH9 : REGIME.CH2;
-}
+/** DOM ids for fields that differ between B31.3 Chapter II vs Chapter IX outputs. */
+const REGIME_DOM_IDS = {
+    [REGIME.CH2]: {
+        outT: "outTminCh2",
+        outL: "outLCh2",
+        alertBox: "alertThkCh2",
+        alertText: "alertThkTextCh2",
+        materialInfo: "materialInfoCh2",
+        materialInfoText: "materialInfoTextCh2",
+        matInfoI18n: "ui.matInfoCh2"
+    },
+    [REGIME.CH9]: {
+        outT: "outTminCh9",
+        outL: "outLCh9",
+        alertBox: "alertThkCh9",
+        alertText: "alertThkTextCh9",
+        materialInfo: "materialInfoCh9",
+        materialInfoText: "materialInfoTextCh9",
+        matInfoI18n: "ui.matInfoCh9"
+    }
+};
 
 function readPressure() {
     const v = parseFloat($("mawp").value);
     return isNaN(v) ? NaN : v;
-}
-
-function formatThickness(value, regime) {
-    return regime === REGIME.CH9 ? value.toFixed(3) : value.toFixed(1);
-}
-
-/** Sleeve outside diameter: D = OD + 2·GAP + 2·THK (pipe OD + annular gap each side + both walls). */
-function sleeveOutsideDiameter(OD, GAP, THK) {
-    return OD + 2 * GAP + 2 * THK;
 }
 
 /* ── Initialization ── */
@@ -209,15 +201,31 @@ function updatePressureUI() {
         banner.textContent = t("ui.bannerCh2", { p: P, thr: P_HP_THRESHOLD_BAR });
     }
 
-    updateK1StressDisplay();
-    updateA1StressDisplay();
+    updateAllowableStressDisplay(
+        REGIME.CH2,
+        "a1StressDisplay",
+        lookupA1Stress,
+        "Table A-1",
+        "ui.selectA1",
+        "ui.noA1"
+    );
+    updateAllowableStressDisplay(
+        REGIME.CH9,
+        "k1StressDisplay",
+        lookupK1Stress,
+        "Table K-1",
+        "ui.selectK1",
+        "ui.noK1"
+    );
 }
 
-function updateA1StressDisplay() {
-    const el = $("a1StressDisplay");
+/**
+ * One code path for Table A-1 vs K-1 readouts; `lookupFn` and `activeRegime` must stay paired.
+ */
+function updateAllowableStressDisplay(activeRegime, elementId, lookupFn, tableShortLabel, selectKey, noDataKey) {
+    const el = $(elementId);
     const regime = getRegime(readPressure());
-
-    if (regime !== REGIME.CH2) {
+    if (regime !== activeRegime) {
         el.hidden = true;
         el.textContent = "";
         return;
@@ -227,52 +235,21 @@ function updateA1StressDisplay() {
     const tmax = parseFloat($("tmax").value);
     if (!mat || isNaN(tmax)) {
         el.hidden = false;
-        el.textContent = t("ui.selectA1");
+        el.textContent = t(selectKey);
         return;
     }
 
-    const a1 = lookupA1Stress(mat, tmax);
-    if (!a1) {
+    const row = lookupFn(mat, tmax);
+    if (!row) {
         el.hidden = false;
-        el.textContent = t("ui.noA1", { mat, tmax });
+        el.textContent = t(noDataKey, { mat, tmax });
         return;
     }
 
     el.hidden = false;
-    el.textContent = a1.logLine
-        ? `${a1.logLine}  →  S = ${a1.mpa} MPa (${a1.bar} bar).`
-        : `Table A-1: S = ${a1.mpa} MPa (${a1.bar} bar) at Tmax = ${tmax} °C. ${a1.note}`;
-}
-
-function updateK1StressDisplay() {
-    const el = $("k1StressDisplay");
-    const regime = getRegime(readPressure());
-
-    if (regime !== REGIME.CH9) {
-        el.hidden = true;
-        el.textContent = "";
-        return;
-    }
-
-    const mat = $("material").value;
-    const tmax = parseFloat($("tmax").value);
-    if (!mat || isNaN(tmax)) {
-        el.hidden = false;
-        el.textContent = t("ui.selectK1");
-        return;
-    }
-
-    const k1 = lookupK1Stress(mat, tmax);
-    if (!k1) {
-        el.hidden = false;
-        el.textContent = t("ui.noK1", { mat, tmax });
-        return;
-    }
-
-    el.hidden = false;
-    el.textContent = k1.logLine
-        ? `${k1.logLine}  →  S = ${k1.mpa} MPa (${k1.bar} bar).`
-        : `Table K-1: S = ${k1.mpa} MPa (${k1.bar} bar) at Tmax = ${tmax} °C. ${k1.note}`;
+    el.textContent = row.logLine
+        ? `${row.logLine}  →  S = ${row.mpa} MPa (${row.bar} bar).`
+        : `${tableShortLabel}: S = ${row.mpa} MPa (${row.bar} bar) at Tmax = ${tmax} °C. ${row.note}`;
 }
 
 /* ── Form state ── */
@@ -407,22 +384,6 @@ function readInputs() {
     };
 }
 
-function computeSleeveCh2({ D, P, S, E, Y, s }) {
-    const denominator = 2 * (S * E + P * Y);
-    const t_pressure = (P * D) / denominator;
-    const L = s + 100;
-    return { D, denominator, t_pressure, L };
-}
-
-function computeCh9Thickness({ D, CA, P, S }) {
-    const factor = (D - 2 * CA) / 2;
-    const exponent = -1.155 * (P / S);
-    const expTerm = Math.exp(exponent);
-    const t_pressure = factor * (1 - expTerm);
-    const t = t_pressure + CA;
-    return { t, t_pressure, factor, exponent, expTerm };
-}
-
 function runCalculation() {
     if (!validateCommon()) {
         showToast(t("toast.fixFields"), true);
@@ -478,9 +439,11 @@ function runCh9Calculation(inp) {
 /* ── THK adequacy check ── */
 
 function checkThicknessAdequacy(tRequired, THK, regime) {
+    const ids = REGIME_DOM_IDS[regime];
+    if (!ids) return;
+    const alertEl = $(ids.alertBox);
+    const textEl = $(ids.alertText);
     const isCh9 = regime === REGIME.CH9;
-    const alertEl = isCh9 ? $("alertThkCh9") : $("alertThkCh2");
-    const textEl = isCh9 ? $("alertThkTextCh9") : $("alertThkTextCh2");
 
     if (tRequired > THK) {
         const tFmt = isCh9 ? tRequired.toFixed(3) : tRequired.toFixed(1);
@@ -494,33 +457,37 @@ function checkThicknessAdequacy(tRequired, THK, regime) {
 /* ── Rendering ── */
 
 function renderResults(thickness, L, regime) {
-    const tStr = formatThickness(thickness, regime);
-    if (regime === REGIME.CH9) {
-        $("outTminCh9").textContent = tStr;
-        $("outLCh9").textContent = L;
-    } else {
-        $("outTminCh2").textContent = tStr;
-        $("outLCh2").textContent = L;
-    }
+    const ids = REGIME_DOM_IDS[regime];
+    if (!ids) return;
+    $(ids.outT).textContent = formatThickness(thickness, regime);
+    $(ids.outL).textContent = L;
 }
 
 function renderMaterialInfo(inp, D, regime, S_bar) {
-    const isCh9 = regime === REGIME.CH9;
-    const infoEl = isCh9 ? $("materialInfoCh9") : $("materialInfoCh2");
-    const textEl = isCh9 ? $("materialInfoTextCh9") : $("materialInfoTextCh2");
-    infoEl.style.display = "flex";
+    const ids = REGIME_DOM_IDS[regime];
+    if (!ids) return;
+    const textEl = $(ids.materialInfoText);
+    $(ids.materialInfo).style.display = "flex";
 
-    if (isCh9) {
+    if (regime === REGIME.CH9) {
         const k1 = inp.k1;
-        const k1txt = `S = ${k1.mpa} MPa (${S_bar} bar) @ ${inp.Tmax} °C`;
-        textEl.textContent = t("ui.matInfoCh9", {
-            mat: inp.mat, mpa: k1.mpa, bar: S_bar, tmax: inp.Tmax, d: D, p: inp.P
+        textEl.textContent = t(ids.matInfoI18n, {
+            mat: inp.mat,
+            mpa: k1.mpa,
+            bar: S_bar,
+            tmax: inp.Tmax,
+            d: D,
+            p: inp.P
         });
     } else {
         const a1 = inp.a1;
-        const a1txt = `S = ${a1.mpa} MPa (${S_bar} bar) @ ${inp.Tmax} °C`;
-        textEl.textContent = t("ui.matInfoCh2", {
-            mat: inp.mat, mpa: a1.mpa, bar: S_bar, tmax: inp.Tmax, e: inp.E, d: D.toFixed(1)
+        textEl.textContent = t(ids.matInfoI18n, {
+            mat: inp.mat,
+            mpa: a1.mpa,
+            bar: S_bar,
+            tmax: inp.Tmax,
+            e: inp.E,
+            d: D.toFixed(1)
         });
     }
 }
@@ -786,12 +753,12 @@ function copyLog() {
 
 /* ── Toast ── */
 
-function showToast(msg, isError) {
-    const t = $("toast");
-    t.textContent = msg;
-    t.style.background = isError ? "var(--red)" : "var(--green)";
-    t.classList.add("show");
-    setTimeout(() => t.classList.remove("show"), 2500);
+function showToast(message, isError) {
+    const toastEl = $("toast");
+    toastEl.textContent = message;
+    toastEl.style.background = isError ? "var(--red)" : "var(--green)";
+    toastEl.classList.add("show");
+    setTimeout(() => toastEl.classList.remove("show"), 2500);
 }
 
 init();
