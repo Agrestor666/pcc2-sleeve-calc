@@ -1,5 +1,7 @@
 # ASME PCC-2 — Sleeve Type B Thickness Calculator
 
+**Version 1.0.0** — see [CHANGELOG.md](CHANGELOG.md).
+
 Web-based calculator for determining minimum wall thickness of **Type B full encirclement repair sleeves** per **ASME PCC-2 Article 2.6**, using design formulas from **ASME B31.3**.
 
 ## Formulas (selected by design pressure P)

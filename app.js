@@ -1,10 +1,15 @@
 /** Ch. II when P < 690 bar; Ch. IX Eq. (34a) when P ≥ 690 bar */
 const P_HP_THRESHOLD_BAR = 690;
 
+/** Semantic version — update with each release; see CHANGELOG.md */
+const APP_VERSION = "1.0.0";
+const CODE_BASIS = "ASME B31.3-2024 (Table A-1 / K-1, SI)";
+
 const REGIME = { CH2: "ch2", CH9: "ch9" };
 
 const $ = id => document.getElementById(id);
 const BASE_INPUT_IDS = ["defect_s", "defect_c", "thk", "od", "gap", "corrosion_ca", "mawp", "tmax"];
+const REF_INPUT_IDS = ["paz", "avis"];
 
 const LOG_RULE = "═══════════════════════════════════════════════";
 
@@ -39,6 +44,21 @@ function init() {
     populateMaterials();
     bindEvents();
     updatePressureUI();
+    renderAppVersion();
+}
+
+function renderAppVersion() {
+    const el = $("appVersion");
+    if (el) {
+        el.textContent = `v${APP_VERSION} · ${CODE_BASIS}`;
+    }
+}
+
+function buildLogVersionLines() {
+    return [
+        `Calculator version             v${APP_VERSION}`,
+        `Code basis                     ${CODE_BASIS}`
+    ];
 }
 
 function populateMaterials() {
@@ -55,7 +75,7 @@ function populateMaterials() {
 }
 
 function bindEvents() {
-    BASE_INPUT_IDS.forEach(id => $(id).addEventListener("input", onInputChange));
+    [...REF_INPUT_IDS, ...BASE_INPUT_IDS].forEach(id => $(id).addEventListener("input", onInputChange));
     $("coeff_y").addEventListener("input", onInputChange);
     $("material").addEventListener("change", onInputChange);
     $("weld_e").addEventListener("change", onInputChange);
@@ -187,14 +207,22 @@ function isRegimeInputsReady(regime) {
 }
 
 function checkReady() {
+    const refOk = REF_INPUT_IDS.every(id => $(id).value.trim() !== "");
     const baseOk = BASE_INPUT_IDS.every(id => $(id).value.trim() !== "");
     const regime = getRegime(readPressure());
     const regimeOk = regime != null && isRegimeInputsReady(regime);
-    $("btnCalc").disabled = !(baseOk && regimeOk);
+    $("btnCalc").disabled = !(refOk && baseOk && regimeOk);
 }
 
 function validateCommon() {
     let ok = true;
+
+    for (const id of REF_INPUT_IDS) {
+        const el = $(id);
+        const valid = el.value.trim() !== "";
+        el.classList.toggle("invalid", !valid);
+        if (!valid) ok = false;
+    }
 
     for (const id of BASE_INPUT_IDS) {
         const el = $(id);
@@ -272,6 +300,8 @@ function readInputs() {
     const GAP = parseFloat($("gap").value);
 
     return {
+        PAZ: $("paz").value.trim(),
+        AVIS: $("avis").value.trim(),
         s: parseInt($("defect_s").value, 10),
         c: parseInt($("defect_c").value, 10),
         THK,
@@ -406,6 +436,15 @@ function renderMaterialInfo(inp, D, regime, S_bar) {
     }
 }
 
+function buildLogReferenceSection(inp) {
+    return [
+        "Reference:",
+        `    PAZ Number (PAZ)             = ${inp.PAZ}`,
+        `    AVIS Number (AVIS)           = ${inp.AVIS}`,
+        LOG_RULE
+    ];
+}
+
 function buildLogInputSection(inp) {
     const { s, c, THK, OD, GAP, D, CA, mat, P, Tmax } = inp;
     return [
@@ -451,6 +490,10 @@ function renderLogCh2(inp, D, denominator, t_pressure, Ts, L, S) {
         a1.logLine ? `    ${a1.logLine}` : `    ${a1.note}`
     ];
     const lines = [
+        ...buildLogReferenceSection(inp),
+        "",
+        ...buildLogVersionLines(),
+        "",
         "Sleeve Type B — Calculation Note",
         "Per ASME PCC-2 Art. 2.6 / ASME B31.3 Chapter II",
         `Design pressure P = ${P} bar (< ${P_HP_THRESHOLD_BAR} bar → Chapter II)`,
@@ -497,6 +540,10 @@ function renderLogCh9(inp, S, t, t_pressure, factor, exponent, expTerm, L) {
     ];
 
     const lines = [
+        ...buildLogReferenceSection(inp),
+        "",
+        ...buildLogVersionLines(),
+        "",
         "Sleeve Type B — Calculation Note",
         "Per ASME PCC-2 Art. 2.6 / ASME B31.3 Chapter IX (high pressure)",
         `Design pressure P = ${P} bar (≥ ${P_HP_THRESHOLD_BAR} bar → Eq. 34a)`,

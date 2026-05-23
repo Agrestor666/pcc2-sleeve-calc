@@ -3,9 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ASME PCC-2 Type B sleeve thickness calculator per ASME B31.3 Chapter II and Chapter IX.">
     <link rel="canonical" href="https://pcc2-sleeve-calc.w3spaces.com/SleeveCalc.html">
     <title>ASME PCC-2 — Sleeve Type B Calculator</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="favicon.png" type="image/png" sizes="32x32">
+    <link rel="apple-touch-icon" href="favicon.png">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ASME PCC-2 — Sleeve Type B Calculator">
+    <meta property="og:description" content="Web calculator for Type B full encirclement repair sleeve thickness (ASME B31.3 Ch. II / Ch. IX).">
+    <meta property="og:url" content="https://pcc2-sleeve-calc.w3spaces.com/SleeveCalc.html">
+    <meta property="og:image" content="https://pcc2-sleeve-calc.w3spaces.com/favicon.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="ASME PCC-2 — Sleeve Type B Calculator">
+    <meta name="twitter:description" content="Web calculator for Type B full encirclement repair sleeve thickness (ASME B31.3 Ch. II / Ch. IX).">
+    <meta name="twitter:image" content="https://pcc2-sleeve-calc.w3spaces.com/favicon.png">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">
 </head>
@@ -20,6 +32,22 @@
 
     <!-- INPUT -->
     <div class="card input-section">
+        <div class="form-group">
+            <div class="form-group-title"><span class="icon">&#9998;</span> Reference</div>
+            <div class="field-row">
+                <div class="field">
+                    <label for="paz">PAZ Number <span class="unit">(PAZ)</span></label>
+                    <input type="text" id="paz" autocomplete="off" placeholder="e.g. PAZ-2026-001">
+                </div>
+                <div class="field">
+                    <label for="avis">AVIS Number <span class="unit">(AVIS)</span></label>
+                    <input type="text" id="avis" autocomplete="off" placeholder="e.g. AVIS-12345">
+                </div>
+            </div>
+        </div>
+
+        <div class="separator"></div>
+
         <div class="card-title">Input Data</div>
 
         <div class="form-group">
@@ -234,6 +262,10 @@
 
 </div>
 
+<footer class="app-footer" id="appFooter">
+    <span id="appVersion"></span>
+</footer>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
@@ -312,10 +344,10 @@
   }
 </style>
 
-<script src="table-a1.js"></script>
-<script src="table-k1.js"></script>
-<script src="materials.js"></script>
-<script src="app.js"></script>
+<script src="table-a1.js?v=1.0.0"></script>
+<script src="table-k1.js?v=1.0.0"></script>
+<script src="materials.js?v=1.0.0"></script>
+<script src="app.js?v=1.0.0"></script>
 
 </body>
 </html>
