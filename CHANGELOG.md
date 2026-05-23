@@ -4,6 +4,12 @@ All notable changes to the PCC-2 Sleeve Type B web calculator are documented her
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Main entry is `index.html` (`/`). `SleeveCalc.html` redirects for old links.
+
 ## [1.1.0] - 2026-05-23
 
 ### Added

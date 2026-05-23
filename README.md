@@ -43,15 +43,16 @@ Some K-1 rows are mapped or approximate — verify against your code edition and
 
 ## ASME PCC-2 Assistant (chat)
 
-Dialogflow CX Messenger (EU) is embedded in `SleeveCalc.html`. Icon source: `pcc2-chat-icon.svg` (also embedded as a data URL in HTML). Chat requires network access to `gstatic.com`.
+Dialogflow CX Messenger (EU) is embedded in `index.html`. Icon source: `pcc2-chat-icon.svg` (also embedded as a data URL in HTML). Chat requires network access to `gstatic.com`.
 
 ## Hosting (W3Spaces) — flat copy, no subfolders
 
-Copy **only these files** into the site root (same folder as `SleeveCalc.html`). No `assets/`, `tables/`, or `tools/` on the server.
+Copy **only these files** into the site root (same folder as `index.html`). No `assets/`, `tables/`, or `tools/` on the server.
 
 | File | Required |
 |------|----------|
-| `SleeveCalc.html` | yes |
+| `index.html` | yes (main page) |
+| `SleeveCalc.html` | optional (redirect stub for old URLs; see file) |
 | `constants.js` | yes |
 | `calc-core.js` | yes |
 | `stress-lookup.js` | yes (load before `table-a1.js` / `table-k1.js`) |
@@ -71,7 +72,8 @@ Do **not** upload: `tools/`, `tables/` (source PDFs only), `README.md`, `CHANGEL
 
 ```
 ASME PCC2/
-├── SleeveCalc.html           Main page
+├── index.html                Main page (also served at site root)
+├── SleeveCalc.html           Optional redirect → index (legacy links)
 ├── constants.js, calc-core.js, stress-lookup.js  Shared constants / math / table lookup helpers
 ├── app.js, i18n.js, styles.css
 ├── table-a1.js, table-k1.js  Table A-1 / K-1 data + per-table lookup wiring (runtime)
@@ -86,7 +88,7 @@ ASME PCC2/
 
 ## Usage
 
-Open `SleeveCalc.html` in a modern browser. No build step.
+Open `index.html` in a modern browser, or use the site root URL. No build step.
 
 1. Enter defect dimensions (s, c)
 2. Enter sleeve parameters (THK, OD, GAP, CA, material)
