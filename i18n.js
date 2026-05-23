@@ -45,6 +45,8 @@ const I18N = {
             outputHp: "OUTPUT DATA — high pressure",
             ch2Title: "ASME B31.3, Chapter II — Process Piping (P < 690 bar)",
             ch9Title: "ASME B31.3, Chapter IX — High Pressure (P ≥ 690 bar)",
+            legendCh2: "<span>CA</span> &ndash; corrosion allowance [mm]<br><span>P</span> &ndash; design pressure<br><span>D</span> &ndash; outside diameter of sleeve, <strong>D = OD + 2&middot;GAP + 2&middot;THK</strong><br><span>GAP</span> &ndash; radial clearance between sleeve bore and pipe OD [mm]<br><span>S</span> &ndash; allowable stress of sleeve material<br><span>E</span> &ndash; weld joint efficiency (default <strong>0.80</strong>; 1.00 if 100% RT)<br><span>Y</span> &ndash; temperature coefficient (ASME B31.3 Table 304.1.1). Default <strong>0.4</strong> for <strong>ferritic</strong> steels at <strong>&le; 482&nbsp;&deg;C</strong> (&le; 900&nbsp;&deg;F).",
+            legendCh9: "<span>CA</span> &ndash; corrosion allowance [mm]<br><span>P</span> &ndash; design pressure<br><span>D</span> &ndash; outside diameter of sleeve, <strong>D = OD + 2&middot;GAP + 2&middot;THK</strong> [mm]<br><span>GAP</span> &ndash; radial clearance between sleeve bore and pipe OD [mm]<br><span>S</span> &ndash; allowable stress from Table K-1 (MPa at Tmax, converted to bar)",
             reqThk: "Required sleeve thickness (incl. CA)",
             sleeveLen: "Sleeve Length",
             calcLog: "Calculation Log",
@@ -186,6 +188,8 @@ const I18N = {
             outputHp: "WYNIKI — wysokie ciśnienie",
             ch2Title: "ASME B31.3, rozdz. II — rurociągi procesowe (P < 690 bar)",
             ch9Title: "ASME B31.3, rozdz. IX — wysokie ciśnienie (P ≥ 690 bar)",
+            legendCh2: "<span>CA</span> &ndash; naddatek korozyjny [mm]<br><span>P</span> &ndash; ciśnienie projektowe<br><span>D</span> &ndash; średnica zewn. rękawa, <strong>D = OD + 2&middot;GAP + 2&middot;THK</strong><br><span>GAP</span> &ndash; luz promieniowy między rękawem a rurą [mm]<br><span>S</span> &ndash; naprężenie dopuszczalne materiału rękawa<br><span>E</span> &ndash; sprawność spoiny (domyślnie <strong>0,80</strong>; 1,00 przy 100% RT)<br><span>Y</span> &ndash; współczynnik temperatury (B31.3 tabela 304.1.1). Domyślnie <strong>0,4</strong> dla stali <strong>ferrytycznych</strong> przy <strong>&le; 482&nbsp;&deg;C</strong>.",
+            legendCh9: "<span>CA</span> &ndash; naddatek korozyjny [mm]<br><span>P</span> &ndash; ciśnienie projektowe<br><span>D</span> &ndash; średnica zewn. rękawa, <strong>D = OD + 2&middot;GAP + 2&middot;THK</strong> [mm]<br><span>GAP</span> &ndash; luz promieniowy między rękawem a rurą [mm]<br><span>S</span> &ndash; naprężenie dopuszczalne z tabeli K-1 (MPa przy Tmax, przeliczone na bar)",
             reqThk: "Wymagana grubość rękawa (z CA)",
             sleeveLen: "Długość rękawa",
             calcLog: "Log obliczeń",
@@ -322,6 +326,8 @@ const I18N = {
             outputHp: "SORTIE — haute pression",
             ch2Title: "ASME B31.3, chapitre II — tuyauterie de procédé (P < 690 bar)",
             ch9Title: "ASME B31.3, chapitre IX — haute pression (P ≥ 690 bar)",
+            legendCh2: "<span>CA</span> &ndash; surépaisseur corrosion [mm]<br><span>P</span> &ndash; pression de conception<br><span>D</span> &ndash; diamètre ext. du manchon, <strong>D = OD + 2&middot;GAP + 2&middot;THK</strong><br><span>GAP</span> &ndash; jeu radial entre manchon et tuyau [mm]<br><span>S</span> &ndash; contrainte admissible du matériau<br><span>E</span> &ndash; efficacité de soudure (défaut <strong>0,80</strong> ; 1,00 si RT 100 %)<br><span>Y</span> &ndash; coefficient de température (B31.3 tableau 304.1.1). Défaut <strong>0,4</strong> pour aciers <strong>ferritiques</strong> à <strong>&le; 482&nbsp;&deg;C</strong>.",
+            legendCh9: "<span>CA</span> &ndash; surépaisseur corrosion [mm]<br><span>P</span> &ndash; pression de conception<br><span>D</span> &ndash; diamètre ext. du manchon, <strong>D = OD + 2&middot;GAP + 2&middot;THK</strong> [mm]<br><span>GAP</span> &ndash; jeu radial entre manchon et tuyau [mm]<br><span>S</span> &ndash; contrainte admissible table K-1 (MPa à Tmax, convertie en bar)",
             reqThk: "Épaisseur requise du manchon (CA incl.)",
             sleeveLen: "Longueur du manchon",
             calcLog: "Journal de calcul",
@@ -458,6 +464,8 @@ const I18N = {
             outputHp: "SAÍDA — alta pressão",
             ch2Title: "ASME B31.3, capítulo II — tubulação de processo (P < 690 bar)",
             ch9Title: "ASME B31.3, capítulo IX — alta pressão (P ≥ 690 bar)",
+            legendCh2: "<span>CA</span> &ndash; sobrepessura de corrosão [mm]<br><span>P</span> &ndash; pressão de projeto<br><span>D</span> &ndash; diâmetro ext. da manga, <strong>D = OD + 2&middot;GAP + 2&middot;THK</strong><br><span>GAP</span> &ndash; folga radial entre manga e tubo [mm]<br><span>S</span> &ndash; tensão admissível do material<br><span>E</span> &ndash; eficiência de solda (padrão <strong>0,80</strong>; 1,00 com RT 100 %)<br><span>Y</span> &ndash; coeficiente de temperatura (B31.3 tabela 304.1.1). Padrão <strong>0,4</strong> para aços <strong>ferríticos</strong> a <strong>&le; 482&nbsp;&deg;C</strong>.",
+            legendCh9: "<span>CA</span> &ndash; sobrepessura de corrosão [mm]<br><span>P</span> &ndash; pressão de projeto<br><span>D</span> &ndash; diâmetro ext. da manga, <strong>D = OD + 2&middot;GAP + 2&middot;THK</strong> [mm]<br><span>GAP</span> &ndash; folga radial entre manga e tubo [mm]<br><span>S</span> &ndash; tensão admissível da tabela K-1 (MPa em Tmax, convertida para bar)",
             reqThk: "Espessura requerida da manga (incl. CA)",
             sleeveLen: "Comprimento da manga",
             calcLog: "Registo de cálculo",
@@ -557,9 +565,9 @@ const I18N = {
 
 let currentLang = localStorage.getItem("pcc2-lang") || "en";
 
-function t(key, params = {}) {
+function t(key, params = {}, lang = currentLang) {
     const parts = key.split(".");
-    let node = I18N[currentLang] || I18N.en;
+    let node = I18N[lang] || I18N.en;
     for (const p of parts) {
         node = node?.[p];
         if (node === undefined) break;
@@ -573,6 +581,11 @@ function t(key, params = {}) {
     if (Array.isArray(node)) return node;
     if (typeof node !== "string") return key;
     return node.replace(/\{(\w+)\}/g, (_, k) => (params[k] != null ? String(params[k]) : `{${k}}`));
+}
+
+/** Calculation log is always English (formal engineering record). */
+function tEn(key, params = {}) {
+    return t(key, params, "en");
 }
 
 function setLanguage(lang) {

@@ -145,8 +145,8 @@ function renderAppVersion() {
 
 function buildLogVersionLines() {
     return [
-        t("log.calcVer", { ver: APP_VERSION }),
-        t("log.codeBasis", { basis: CODE_BASIS })
+        tEn("log.calcVer", { ver: APP_VERSION }),
+        tEn("log.codeBasis", { basis: CODE_BASIS })
     ];
 }
 
@@ -527,9 +527,9 @@ function renderMaterialInfo(inp, D, regime, S_bar) {
 
 function buildLogReferenceSection(inp) {
     return [
-        t("log.reference"),
-        t("log.paz", { paz: inp.PAZ }),
-        t("log.avis", { avis: inp.AVIS }),
+        tEn("log.reference"),
+        tEn("log.paz", { paz: inp.PAZ }),
+        tEn("log.avis", { avis: inp.AVIS }),
         LOG_RULE
     ];
 }
@@ -537,43 +537,43 @@ function buildLogReferenceSection(inp) {
 function buildLogInputSection(inp) {
     const { s, c, THK, OD, GAP, D, CA, mat, P, Tmax } = inp;
     return [
-        t("log.inputData"),
+        tEn("log.inputData"),
         "",
-        t("log.defectSize"),
-        t("log.longS", { s }),
-        t("log.circC", { c }),
+        tEn("log.defectSize"),
+        tEn("log.longS", { s }),
+        tEn("log.circC", { c }),
         "",
-        t("log.sleeveBlock"),
-        t("log.thk", { thk: THK }),
-        t("log.od", { od: OD }),
-        t("log.gap", { gap: GAP }),
-        t("log.dCalc", { d: D.toFixed(1) }),
-        t("log.ca", { ca: CA }),
-        t("log.mat", { mat }),
+        tEn("log.sleeveBlock"),
+        tEn("log.thk", { thk: THK }),
+        tEn("log.od", { od: OD }),
+        tEn("log.gap", { gap: GAP }),
+        tEn("log.dCalc", { d: D.toFixed(1) }),
+        tEn("log.ca", { ca: CA }),
+        tEn("log.mat", { mat }),
         "",
-        t("log.process"),
-        t("log.p", { p: P }),
-        t("log.tmax", { tmax: Tmax })
+        tEn("log.process"),
+        tEn("log.p", { p: P }),
+        tEn("log.tmax", { tmax: Tmax })
     ];
 }
 
 function buildLogFooter(L, thicknessLine) {
     return [
         LOG_RULE,
-        t("log.results"),
+        tEn("log.results"),
         "",
         thicknessLine,
-        t("log.sleeveL", { L }),
+        tEn("log.sleeveL", { L }),
         "",
-        ...t("log.typeBNote"),
+        ...tEn("log.typeBNote"),
         LOG_RULE
     ];
 }
 
 function buildWeldEfficiencyLogNotes(E) {
     const eLabel = E >= 0.999 ? "1.00" : "0.80";
-    const lines = [t("log.factorE", { e: eLabel })];
-    lines.push(...(E >= 0.999 ? t("log.eNote100") : t("log.eNote80")));
+    const lines = [tEn("log.factorE", { e: eLabel })];
+    lines.push(...(E >= 0.999 ? tEn("log.eNote100") : tEn("log.eNote80")));
     return lines;
 }
 
@@ -581,7 +581,7 @@ function renderLogCh2(inp, D, denominator, t_pressure, Ts, L, S) {
     const { P, CA, Y, E, mat, Tmax, a1, OD, GAP, THK } = inp;
     const a1lines = [
         `    Table A-1 (B31.3-2024, SI): S = ${a1.mpa} MPa = ${S} bar`,
-        t("log.tmaxA1", { tmax: Tmax }),
+        tEn("log.tmaxA1", { tmax: Tmax }),
         a1.logLine ? `    ${a1.logLine}` : `    ${a1.note}`
     ];
     const lines = [
@@ -589,22 +589,22 @@ function renderLogCh2(inp, D, denominator, t_pressure, Ts, L, S) {
         "",
         ...buildLogVersionLines(),
         "",
-        t("log.noteTitle"),
-        t("log.ch2Hdr"),
-        t("log.ch2P", { p: P, thr: P_HP_THRESHOLD_BAR }),
+        tEn("log.noteTitle"),
+        tEn("log.ch2Hdr"),
+        tEn("log.ch2P", { p: P, thr: P_HP_THRESHOLD_BAR }),
         LOG_RULE,
         "",
         ...buildLogInputSection(inp),
         ...a1lines,
-        t("log.allowS", { S }),
-        t("log.coeffY", { Y }),
+        tEn("log.allowS", { S }),
+        tEn("log.coeffY", { Y }),
         "",
-        t("log.weld"),
+        tEn("log.weld"),
         ...buildWeldEfficiencyLogNotes(E),
-        t("log.dDetail", { od: OD, gap: GAP, thk: THK, d: D.toFixed(1) }),
+        tEn("log.dDetail", { od: OD, gap: GAP, thk: THK, d: D.toFixed(1) }),
         "",
         LOG_RULE,
-        t("log.formulaCh2"),
+        tEn("log.formulaCh2"),
         "",
         "    D = OD + 2·GAP + 2·THK",
         "    t = (P · D) / (2 · (S · E + P · Y)) + CA",
@@ -612,11 +612,11 @@ function renderLogCh2(inp, D, denominator, t_pressure, Ts, L, S) {
         `    t_pressure = ${(P * D).toFixed(1)} / ${denominator.toFixed(1)} = ${t_pressure.toFixed(1)} mm`,
         `    t = t_pressure + CA = ${t_pressure.toFixed(1)} + ${CA} = ${Ts.toFixed(1)} mm`,
         "",
-        ...buildLogFooter(L, t("log.reqT", { t: Ts.toFixed(1) })),
+        ...buildLogFooter(L, tEn("log.reqT", { t: Ts.toFixed(1) })),
         "",
-        ...t("log.yNote"),
+        ...tEn("log.yNote"),
         "",
-        ...t("log.sNoteA1")
+        ...tEn("log.sNoteA1")
     ];
 
     $("logContainer").textContent = lines.join("\n");
@@ -627,7 +627,7 @@ function renderLogCh9(inp, S, t, t_pressure, factor, exponent, expTerm, L) {
     const k1 = inp.k1;
     const k1lines = [
         `    Table K-1 (B31.3-2024, SI): S = ${k1.mpa} MPa = ${k1.bar} bar`,
-        t("log.tmaxK1", { tmax: Tmax }),
+        tEn("log.tmaxK1", { tmax: Tmax }),
         k1.logLine ? `    ${k1.logLine}` : `    ${k1.note}`
     ];
 
@@ -636,16 +636,16 @@ function renderLogCh9(inp, S, t, t_pressure, factor, exponent, expTerm, L) {
         "",
         ...buildLogVersionLines(),
         "",
-        t("log.noteTitle"),
-        t("log.ch9Hdr"),
-        t("log.ch9P", { p: P, thr: P_HP_THRESHOLD_BAR }),
+        tEn("log.noteTitle"),
+        tEn("log.ch9Hdr"),
+        tEn("log.ch9P", { p: P, thr: P_HP_THRESHOLD_BAR }),
         LOG_RULE,
         "",
         ...buildLogInputSection(inp),
         ...k1lines,
         "",
         LOG_RULE,
-        t("log.formulaCh9"),
+        tEn("log.formulaCh9"),
         "",
         "    D = OD + 2·GAP + 2·THK",
         "    t = ((D − 2·CA) / 2) · (1 − exp(−1.155 · P / S)) + CA",
@@ -655,9 +655,9 @@ function renderLogCh9(inp, S, t, t_pressure, factor, exponent, expTerm, L) {
         `    t_pressure = ${factor.toFixed(4)} × (1 − ${expTerm.toFixed(6)}) = ${t_pressure.toFixed(4)} mm`,
         `    t = t_pressure + CA = ${t_pressure.toFixed(4)} + ${CA} = ${t.toFixed(4)} mm`,
         "",
-        ...buildLogFooter(L, t("log.reqT", { t: t.toFixed(3) })),
+        ...buildLogFooter(L, tEn("log.reqT", { t: t.toFixed(3) })),
         "",
-        ...t("log.sNoteK1")
+        ...tEn("log.sNoteK1")
     ];
 
     $("logContainer").textContent = lines.join("\n");
