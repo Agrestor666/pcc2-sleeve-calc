@@ -10,7 +10,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 - Daylight (light) theme toggle with persisted preference.
 - UI and calculation log translations: English, Polish, French, Portuguese.
-- Help modal with Type B sleeve schematic (`assets/type-b-sleeve-diagram.png`).
+- Help modal with Type B sleeve schematic (`type-b-sleeve-diagram.png`).
 - PDF export for calculation log; default weld joint efficiency **E = 0.80** with log notes.
 
 ### Changed

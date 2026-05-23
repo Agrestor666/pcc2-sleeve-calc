@@ -10,7 +10,7 @@ import fitz
 from build_table_k1 import extract_stress_section
 
 ROOT = Path(__file__).resolve().parents[1]
-PDF = ROOT / "tables" / "A1.pdf"
+PDF = ROOT / "A1.pdf"
 
 SECTIONS = [
     ("carbon", [40, 65, 100, 150, 200, 250, 300, 325, 350, 375]),

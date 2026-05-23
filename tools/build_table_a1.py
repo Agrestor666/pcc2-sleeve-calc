@@ -15,8 +15,8 @@ import numpy as np
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-PDF = ROOT / "tables" / "A1.pdf"
-OUT_JS = ROOT / "tables" / "table-a1.js"
+PDF = ROOT / "A1.pdf"
+OUT_JS = ROOT / "table-a1.js"
 OUT_JSON = ROOT / "tools" / "a1_stress_data.json"
 
 # Stress-table pages in A1.pdf (0-based), OCR-mapped to B31.3-2024 Table A-1 SI sections

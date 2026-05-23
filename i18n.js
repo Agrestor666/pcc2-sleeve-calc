@@ -649,7 +649,7 @@ function helpHtmlEn() {
 <p><strong>PCC-2</strong> covers repair of pressure equipment and piping. <strong>Article 2.6</strong> addresses full encirclement sleeves over defects or thin areas.</p></section>
 <section class="modal-section"><h3>Type B sleeve</h3>
 <p><strong>Type B</strong> carries <strong>100% design pressure</strong>; carrier pipe wall is <strong>not credited</strong>.</p>
-<figure class="modal-figure"><img src="assets/type-b-sleeve-diagram.png" alt="Type B sleeve schematic" width="800" height="450" loading="lazy">
+<figure class="modal-figure"><img src="type-b-sleeve-diagram.png" alt="Type B sleeve schematic" width="800" height="450" loading="lazy">
 <figcaption>Conceptual schematic — confirm against PCC-2 and project drawings.</figcaption></figure>
 <ul><li>Localized defect length <em>s</em>; annular <strong>GAP</strong>; weld <strong>E</strong>; <strong>CA</strong> added to pressure thickness.</li></ul></section>
 <section class="modal-section"><h3>Related</h3>
@@ -668,7 +668,7 @@ function helpHtmlPl() {
 <p><strong>PCC-2</strong> — naprawy aparatury i rurociągów. <strong>Art. 2.6</strong> — rękawy pełnoobwodowe na usterki.</p></section>
 <section class="modal-section"><h3>Rękaw typu B</h3>
 <p><strong>Typ B</strong> na <strong>100% ciśnienia projektowego</strong>; ścianka rury <strong>nie jest kredytowana</strong>.</p>
-<figure class="modal-figure"><img src="assets/type-b-sleeve-diagram.png" alt="Schemat rękawa typu B" width="800" height="450" loading="lazy">
+<figure class="modal-figure"><img src="type-b-sleeve-diagram.png" alt="Schemat rękawa typu B" width="800" height="450" loading="lazy">
 <figcaption>Schemat orientacyjny — potwierdź z PCC-2 i rysunkiem projektu.</figcaption></figure></section>
 <section class="modal-section"><h3>Zasoby</h3>
 <p>Tabele <strong>B31.3-2024</strong> A-1 / K-1 (SI). AutoCAD: <a href="https://github.com/Agrestor666/ASME_PCC_2" target="_blank" rel="noopener">ASME_PCC_2</a>.</p></section>`;
@@ -686,7 +686,7 @@ function helpHtmlFr() {
 <p><strong>PCC-2</strong> — réparation équipements sous pression. <strong>Art. 2.6</strong> — manchons pleine circonférence.</p></section>
 <section class="modal-section"><h3>Manchon type B</h3>
 <p><strong>Type B</strong> à <strong>100 % de la pression</strong> ; paroi du tuyau <strong>non créditée</strong>.</p>
-<figure class="modal-figure"><img src="assets/type-b-sleeve-diagram.png" alt="Schéma manchon type B" width="800" height="450" loading="lazy">
+<figure class="modal-figure"><img src="type-b-sleeve-diagram.png" alt="Schéma manchon type B" width="800" height="450" loading="lazy">
 <figcaption>Schéma conceptuel — confirmer avec PCC-2 et plans projet.</figcaption></figure></section>
 <section class="modal-section"><h3>Ressources</h3>
 <p>Tables <strong>B31.3-2024</strong> A-1 / K-1 (SI). AutoCAD : <a href="https://github.com/Agrestor666/ASME_PCC_2" target="_blank" rel="noopener">ASME_PCC_2</a>.</p></section>`;
@@ -704,7 +704,7 @@ function helpHtmlPt() {
 <p><strong>PCC-2</strong> — reparação de equipamentos sob pressão. <strong>Art. 2.6</strong> — mangas de circunferência completa.</p></section>
 <section class="modal-section"><h3>Manga tipo B</h3>
 <p><strong>Tipo B</strong> suporta <strong>100% da pressão de projeto</strong>; parede do tubo <strong>não é creditada</strong>.</p>
-<figure class="modal-figure"><img src="assets/type-b-sleeve-diagram.png" alt="Esquema manga tipo B" width="800" height="450" loading="lazy">
+<figure class="modal-figure"><img src="type-b-sleeve-diagram.png" alt="Esquema manga tipo B" width="800" height="450" loading="lazy">
 <figcaption>Esquema conceptual — confirmar com PCC-2 e desenhos do projeto.</figcaption></figure></section>
 <section class="modal-section"><h3>Recursos</h3>
 <p>Tabelas <strong>B31.3-2024</strong> A-1 / K-1 (SI). AutoCAD: <a href="https://github.com/Agrestor666/ASME_PCC_2" target="_blank" rel="noopener">ASME_PCC_2</a>.</p></section>`;

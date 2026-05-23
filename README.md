@@ -32,8 +32,8 @@ Type B sleeves are designed for 100% of design pressure with no credit for remai
 
 - Two formula panels: Chapter II (Output) and Chapter IX (high pressure). The inactive panel is greyed out.
 - Results appear under the **active** formula only.
-- For **P &lt; 690 bar**, **S** is looked up from **Table A-1** (`tables/table-a1.js`, B31.3-2024 SI: °C / MPa) at **Tmax**; the Run button stays disabled until a valid A-1 value exists.
-- For **P ≥ 690 bar**, **S** is looked up from **Table K-1** (`tables/table-k1.js`, B31.3-2024 SI: °C / MPa) at **Tmax**; the Run button stays disabled until a valid K-1 value exists.
+- For **P &lt; 690 bar**, **S** is looked up from **Table A-1** (`table-a1.js`, B31.3-2024 SI: °C / MPa) at **Tmax**; the Run button stays disabled until a valid A-1 value exists.
+- For **P ≥ 690 bar**, **S** is looked up from **Table K-1** (`table-k1.js`, B31.3-2024 SI: °C / MPa) at **Tmax**; the Run button stays disabled until a valid K-1 value exists.
 
 ## Supported materials (27)
 
@@ -45,24 +45,38 @@ Some K-1 rows are mapped or approximate — verify against your code edition and
 
 Dialogflow CX Messenger (EU) is embedded in `SleeveCalc.html`. Icon source: `pcc2-chat-icon.svg` (also embedded as a data URL in HTML). Chat requires network access to `gstatic.com`.
 
+## Hosting (W3Spaces) — flat copy, no subfolders
+
+Copy **only these files** into the site root (same folder as `SleeveCalc.html`). No `assets/`, `tables/`, or `tools/` on the server.
+
+| File | Required |
+|------|----------|
+| `SleeveCalc.html` | yes |
+| `app.js` | yes |
+| `i18n.js` | yes |
+| `styles.css` | yes |
+| `table-a1.js` | yes |
+| `table-k1.js` | yes |
+| `materials.js` | yes |
+| `type-b-sleeve-diagram.png` | yes (help modal figure) |
+| `favicon.svg` / `favicon.png` | optional |
+| `sitemap.xml`, `googleaab751f69310ca84.html` | optional |
+
+Do **not** upload: `tools/`, `A1.pdf`, `K1.pdf`, `README.md`, `CHANGELOG.md`.
+
 ## Project structure
 
 ```
 ASME PCC2/
-├── SleeveCalc.html      Main page
-├── assets/              Help modal figures (Type B schematic)
-├── styles.css           Layout and dark theme
-├── materials.js         Legacy fixed S (deprecated; use tables/table-a1.js)
-├── tables/
-│   ├── table-a1.js      Table A-1 lookup (Chapter II)
-│   ├── table-k1.js      Table K-1 lookup (Chapter IX)
-│   ├── A1.pdf           Source PDF (Table A-1, not required on hosting)
-│   └── K1.pdf           Source PDF (Table K-1, not required on hosting)
-├── app.js               UI, validation, calculations, export
-├── favicon.svg
-├── pcc2-chat-icon.svg   Chat icon source (optional edit asset)
-├── sitemap.xml          SEO (hosting)
-├── googleaab751f69310ca84.html   Google Search Console (optional)
+├── SleeveCalc.html           Main page
+├── app.js, i18n.js, styles.css
+├── table-a1.js, table-k1.js  Table A-1 / K-1 lookup (runtime)
+├── type-b-sleeve-diagram.png Help modal schematic
+├── materials.js              Legacy fixed S (deprecated)
+├── favicon.svg, favicon.png
+├── A1.pdf, K1.pdf            Source PDFs (dev/OCR only — not for hosting)
+├── tools/                    Python OCR / table build (not for hosting)
+├── sitemap.xml, googleaab751f69310ca84.html
 └── README.md
 ```
 
