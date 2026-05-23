@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
-    pdf_name = sys.argv[1] if len(sys.argv) > 1 else "A1.pdf"
+    pdf_name = sys.argv[1] if len(sys.argv) > 1 else "tables/A1.pdf"
     page_idx = int(sys.argv[2]) if len(sys.argv) > 2 else 38
     temps = [40, 65, 100, 150, 200, 250, 300, 325, 350, 375]
     if len(sys.argv) > 3:

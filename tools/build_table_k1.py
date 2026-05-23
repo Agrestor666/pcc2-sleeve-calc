@@ -14,8 +14,8 @@ import numpy as np
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-PDF = ROOT / "K1.pdf"
-OUT_JS = ROOT / "table-k1.js"
+PDF = ROOT / "tables" / "K1.pdf"
+OUT_JS = ROOT / "tables" / "table-k1.js"
 
 # App material key -> (section_index, line_no) in K-1 blocks
 MATERIAL_LINES: dict[str, tuple[int, int]] = {

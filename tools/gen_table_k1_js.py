@@ -130,7 +130,7 @@ def main():
     lines.append("")
     lines.extend(emit_k1_lookup_tail())
 
-    out = ROOT / "table-k1.js"
+    out = ROOT / "tables" / "table-k1.js"
     out.write_text("\n".join(lines), encoding="utf-8")
     print(f"Wrote {out} ({len(MATERIAL_MAP)} materials)")
 

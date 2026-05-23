@@ -2,8 +2,8 @@
 const fs = require("fs");
 const path = require("path");
 const root = path.join(__dirname, "..");
-const a1 = fs.readFileSync(path.join(root, "table-a1.js"), "utf8");
-const k1 = fs.readFileSync(path.join(root, "table-k1.js"), "utf8");
+const a1 = fs.readFileSync(path.join(root, "tables", "table-a1.js"), "utf8");
+const k1 = fs.readFileSync(path.join(root, "tables", "table-k1.js"), "utf8");
 const ctx = new Function(
     a1 + k1 + "; return { lookupA1Stress, lookupK1Stress, A1_BY_MATERIAL, K1_BY_MATERIAL };"
 )();

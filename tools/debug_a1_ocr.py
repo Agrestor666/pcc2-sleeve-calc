@@ -45,7 +45,7 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")
     pi = int(sys.argv[1]) if len(sys.argv) > 1 else 38
     reader = easyocr.Reader(["en"], gpu=False, verbose=False)
-    doc = fitz.open(ROOT / "A1.pdf")
+    doc = fitz.open(ROOT / "tables" / "A1.pdf")
     rows = cluster_rows(ocr_page(reader, doc[pi]))
     print(f"Page {pi}: {len(rows)} OCR rows")
     for row in rows:

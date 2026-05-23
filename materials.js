@@ -1,4 +1,4 @@
-/** @deprecated Legacy fixed S [bar]; Chapter II now uses Table A-1 via table-a1.js */
+/** @deprecated Legacy fixed S [bar]; Chapter II now uses Table A-1 via tables/table-a1.js */
 const SValues = {
     "API 5L GRADE B PSL 2": 1380,
     "API SPEC 5L GRADE X60 PSL 2": 1720,
