@@ -18,7 +18,7 @@ Web-based calculator for determining minimum wall thickness of **Type B full enc
 | **D** | Outside diameter of sleeve (= OD + 2·GAP + 2·THK) [mm] |
 | **GAP** | Radial clearance between sleeve bore and pipe OD (each side) [mm] |
 | **S** | Allowable stress [bar] — from **Table A-1** (Ch. II) or **Table K-1** (Ch. IX, B31.3-2024 SI: MPa×10) |
-| **E** | Weld joint efficiency (0.80 or 1.00), Ch. II only |
+| **E** | Weld joint efficiency (default **0.80**; 1.00 if 100% RT applies), Ch. II only |
 | **Y** | Temperature coefficient (B31.3 Table 304.1.1), Ch. II only |
 | **CA** | Corrosion allowance [mm] |
 
@@ -50,6 +50,7 @@ Dialogflow CX Messenger (EU) is embedded in `SleeveCalc.html`. Icon source: `pcc
 ```
 ASME PCC2/
 ├── SleeveCalc.html      Main page
+├── assets/              Help modal figures (Type B schematic)
 ├── styles.css           Layout and dark theme
 ├── materials.js         Legacy fixed S (deprecated; use table-a1.js)
 ├── table-a1.js          Table A-1 lookup (Chapter II)

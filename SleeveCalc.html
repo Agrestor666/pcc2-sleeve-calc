@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,41 +24,65 @@
 <body>
 
 <header>
-    <h1>ASME PCC-2 &mdash; Sleeve Type B Thickness Calculator</h1>
-    <span class="badge">ASME B31.3</span>
+    <div class="header-main">
+        <h1 data-i18n="ui.headerTitle">ASME PCC-2 &mdash; Sleeve Type B Thickness Calculator</h1>
+        <span class="badge" data-i18n="ui.badge">ASME B31.3</span>
+    </div>
+    <div class="header-toolbar">
+        <div class="lang-switcher" role="group" data-i18n-aria="ui.langAria">
+            <button type="button" class="lang-btn lang-btn--active" data-lang="en" title="English">EN</button>
+            <button type="button" class="lang-btn" data-lang="pl" title="Polski">PL</button>
+            <button type="button" class="lang-btn" data-lang="fr" title="Français">FR</button>
+            <button type="button" class="lang-btn" data-lang="pt" title="Português">PT</button>
+        </div>
+        <button type="button" class="btn-theme" id="btnTheme" data-i18n-title="ui.themeLight" aria-label="Toggle theme">
+            <span class="btn-theme__icon" id="btnThemeIcon" aria-hidden="true">&#9728;</span>
+        </button>
+        <button type="button" class="btn-help" id="btnHelp" data-i18n-title="ui.helpTitle" data-i18n-aria="ui.helpAria">?</button>
+    </div>
 </header>
+
+<div class="modal-overlay" id="helpModal" hidden role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
+    <div class="modal-panel" role="document">
+        <div class="modal-header">
+            <h2 id="helpModalTitle" data-i18n="ui.helpModalTitle">Help &amp; technical overview</h2>
+            <button type="button" class="modal-close" id="btnHelpClose" data-i18n-aria="ui.closeHelp">&times;</button>
+        </div>
+        <div class="modal-body" id="helpModalBody"></div>
+    </div>
+</div>
 
 <div class="app">
 
     <!-- INPUT -->
     <div class="card input-section">
         <div class="form-group">
-            <div class="form-group-title"><span class="icon">&#9998;</span> Reference</div>
+            <div class="form-group-title"><span class="icon">&#9998;</span> <span data-i18n="ui.reference">Reference</span></div>
             <div class="field-row">
                 <div class="field">
-                    <label for="paz">PAZ Number <span class="unit">(PAZ)</span></label>
-                    <input type="text" id="paz" autocomplete="off" placeholder="e.g. PAZ-2026-001">
+                    <label for="paz" data-i18n="ui.pazLabel">PAZ Number (PAZ)</label>
+                    <input type="text" id="paz" autocomplete="off" data-i18n-placeholder="ui.pazPh" placeholder="e.g. PAZ-2026-001">
                 </div>
                 <div class="field">
-                    <label for="avis">AVIS Number <span class="unit">(AVIS)</span></label>
-                    <input type="text" id="avis" autocomplete="off" placeholder="e.g. AVIS-12345">
+                    <label for="avis" data-i18n="ui.avisLabel">AVIS Number (AVIS)</label>
+                    <input type="text" id="avis" autocomplete="off" data-i18n-placeholder="ui.avisPh" placeholder="e.g. AVIS-12345">
                 </div>
             </div>
         </div>
 
         <div class="separator"></div>
 
-        <div class="card-title">Input Data</div>
+        <div class="card-title" data-i18n="ui.inputData">Input Data</div>
 
         <div class="form-group">
-            <div class="form-group-title"><span class="icon">&#9670;</span> Size of Defect</div>
+            <div class="form-group-title"><span class="icon">&#9670;</span> <span data-i18n="ui.defectSize">Size of Defect</span></div>
             <div class="field-row">
                 <div class="field">
-                    <label for="defect_s">Longitudinal s <span class="unit">[mm]</span></label>
+                    <label for="defect_s" data-i18n="ui.longitudinal">Longitudinal s [mm]</label>
                     <input type="number" id="defect_s" min="1" step="1" placeholder="e.g. 150">
                 </div>
                 <div class="field">
-                    <label for="defect_c">Circumferential c <span class="unit">[mm]</span></label>
+                    <label for="defect_c" data-i18n="ui.circumferential">Circumferential c [mm]</label>
                     <input type="number" id="defect_c" min="1" step="1" placeholder="e.g. 50">
                 </div>
             </div>
@@ -67,31 +91,31 @@
         <div class="separator"></div>
 
         <div class="form-group">
-            <div class="form-group-title"><span class="icon">&#9679;</span> Predicted Sleeve Parameters and parent pipe details</div>
+            <div class="form-group-title"><span class="icon">&#9679;</span> <span data-i18n="ui.sleeveParams">Predicted Sleeve Parameters and parent pipe details</span></div>
             <div class="field-row">
                 <div class="field">
-                    <label for="thk">Thickness(sleeve) THK <span class="unit">[mm]</span></label>
+                    <label for="thk" data-i18n="ui.thk">Thickness (sleeve) THK [mm]</label>
                     <input type="number" id="thk" min="0.1" step="any" placeholder="e.g. 12.7">
                 </div>
                 <div class="field">
-                    <label for="od">Outside Diameter(pipe) OD <span class="unit">[mm]</span></label>
+                    <label for="od" data-i18n="ui.od">Outside Diameter (pipe) OD [mm]</label>
                     <input type="number" id="od" min="0.1" step="any" placeholder="e.g. 323.9">
                 </div>
             </div>
             <div class="field-row">
                 <div class="field full-width">
-                    <label for="gap">GAP <span class="unit">[mm]</span></label>
-                    <p class="field-note">Radial clearance between the sleeve bore and the carrier pipe outside diameter (annular gap, each side).</p>
+                    <label for="gap" data-i18n="ui.gap">GAP [mm]</label>
+                    <p class="field-note" data-i18n="ui.gapNote">Radial clearance between the sleeve bore and the carrier pipe outside diameter (annular gap, each side).</p>
                     <input type="number" id="gap" min="0" step="any" placeholder="e.g. 0">
                 </div>
             </div>
             <div class="field-row">
                 <div class="field">
-                    <label for="corrosion_ca">Corrosion allowance CA <span class="unit">[mm]</span></label>
+                    <label for="corrosion_ca" data-i18n="ui.ca">Corrosion allowance CA [mm]</label>
                     <input type="number" id="corrosion_ca" min="0" step="any" placeholder="e.g. 0">
                 </div>
                 <div class="field">
-                    <label for="material">Material</label>
+                    <label for="material" data-i18n="ui.material">Material</label>
                     <select id="material"></select>
                 </div>
             </div>
@@ -100,35 +124,35 @@
         <div class="separator"></div>
 
         <div class="form-group">
-            <div class="form-group-title"><span class="icon">&#9650;</span> Process Data</div>
+            <div class="form-group-title"><span class="icon">&#9650;</span> <span data-i18n="ui.processData">Process Data</span></div>
             <div class="field-row">
                 <div class="field">
-                    <label for="mawp">MAWP / Design Pressure P <span class="unit">[bar]</span></label>
+                    <label for="mawp" data-i18n="ui.mawp">MAWP / Design Pressure P [bar]</label>
                     <input type="number" id="mawp" min="0.1" step="any" placeholder="e.g. 40">
                 </div>
                 <div class="field">
-                    <label for="tmax">Design Temperature Tmax <span class="unit">[&deg;C]</span></label>
+                    <label for="tmax" data-i18n="ui.tmax">Design Temperature Tmax [°C]</label>
                     <input type="number" id="tmax" step="1" placeholder="e.g. 200">
                 </div>
             </div>
             <div class="field-row" id="fieldGroupCh9" hidden>
                 <div class="field full-width">
-                    <p class="field-note">When <strong>P ≥ 690 bar</strong>, allowable stress <strong>S</strong> is taken from <strong>Table K-1</strong> (B31.3-2024, SI) for the selected material at design temperature <strong>Tmax</strong> (table in °C, stress in MPa; converted to bar for Eq.&nbsp;(34a): 1&nbsp;MPa&nbsp;=&nbsp;10&nbsp;bar).</p>
+                    <p class="field-note" data-i18n-html="ui.ch9Note">When <strong>P ≥ 690 bar</strong>, allowable stress <strong>S</strong> is taken from <strong>Table K-1</strong> (B31.3-2024, SI) for the selected material at design temperature <strong>Tmax</strong> (table in °C, stress in MPa; converted to bar for Eq.&nbsp;(34a): 1&nbsp;MPa&nbsp;=&nbsp;10&nbsp;bar).</p>
                     <div id="k1StressDisplay" hidden></div>
                 </div>
             </div>
             <div id="fieldGroupCh2">
             <div class="field-row">
                 <div class="field full-width">
-                    <p class="field-note">When <strong>P &lt; 690 bar</strong>, allowable stress <strong>S</strong> is taken from <strong>Table A-1</strong> (B31.3-2024, SI) for the selected material at design temperature <strong>Tmax</strong> (table in °C, stress in MPa; converted to bar for Chapter II: 1&nbsp;MPa&nbsp;=&nbsp;10&nbsp;bar).</p>
+                    <p class="field-note" data-i18n-html="ui.ch2Note">When <strong>P &lt; 690 bar</strong>, allowable stress <strong>S</strong> is taken from <strong>Table A-1</strong> (B31.3-2024, SI) for the selected material at design temperature <strong>Tmax</strong> (table in °C, stress in MPa; converted to bar for Chapter II: 1&nbsp;MPa&nbsp;=&nbsp;10&nbsp;bar).</p>
                     <div id="a1StressDisplay" hidden></div>
                 </div>
             </div>
             <div class="field-row">
                 <div class="field full-width">
-                    <label for="coeff_y">Coefficient Y <span class="unit">[&mdash;]</span></label>
+                    <label for="coeff_y" data-i18n="ui.coeffY">Coefficient Y [—]</label>
                     <input type="number" id="coeff_y" min="0" step="any" value="0.4" placeholder="0.4">
-                    <p class="field-note">Default <strong>0.4</strong> matches ASME B31.3 Table 304.1.1 for <strong>ferritic</strong> steels at <strong>≤ 482&nbsp;°C</strong> (≤ 900&nbsp;°F). At higher temperatures, <strong>Y</strong> increases—edit per your edition.</p>
+                    <p class="field-note" data-i18n-html="ui.yNote">Default <strong>0.4</strong> matches ASME B31.3 Table 304.1.1 for <strong>ferritic</strong> steels at <strong>≤ 482&nbsp;°C</strong> (≤ 900&nbsp;°F). At higher temperatures, <strong>Y</strong> increases—edit per your edition.</p>
                 </div>
             </div>
             </div>
@@ -137,29 +161,30 @@
         <div class="separator"></div>
 
         <div class="form-group" id="fieldGroupCh2Weld">
-            <div class="form-group-title"><span class="icon">&#9674;</span> Weld Joint Efficiency</div>
+            <div class="form-group-title"><span class="icon">&#9674;</span> <span data-i18n="ui.weldEff">Weld Joint Efficiency</span></div>
             <div class="field-row">
                 <div class="field">
-                    <label for="weld_e">Factor E</label>
+                    <label for="weld_e" data-i18n="ui.factorE">Factor E</label>
                     <select id="weld_e">
-                        <option value="0.8">0.80</option>
-                        <option value="1.0" selected>1.00</option>
+                        <option value="0.8" selected>0.80</option>
+                        <option value="1.0">1.00</option>
                     </select>
+                    <p class="field-note" data-i18n-html="ui.eNote">Default <strong>0.80</strong> — typical for sleeve welds <strong>without 100% RT</strong> (per B31.3 joint efficiency for the assumed category). Use <strong>1.00</strong> only when full NDE (e.g. 100% RT) applies.</p>
                 </div>
             </div>
         </div>
 
-        <button class="btn btn-primary" id="btnCalc" disabled>Run Sleeve THK Calculation</button>
+        <button class="btn btn-primary" id="btnCalc" disabled data-i18n="ui.runCalc">Run Sleeve THK Calculation</button>
     </div>
 
     <!-- OUTPUT -->
     <div class="card output-section">
-        <div class="card-title">Output Data</div>
+        <div class="card-title" data-i18n="ui.outputData">Output Data</div>
 
         <div class="info-row" id="pressureRegimeBanner" hidden></div>
 
         <div class="formula-box" id="formulaCh2Box">
-            <div class="formula-title">ASME B31.3, Chapter II &mdash; Process Piping <span class="formula-regime">(P &lt; 690 bar)</span></div>
+            <div class="formula-title" data-i18n="ui.ch2Title">ASME B31.3, Chapter II — Process Piping (P &lt; 690 bar)</div>
             <div class="formula">
                 t =
                 <span class="frac">
@@ -174,7 +199,7 @@
                 <span>D</span> &ndash; outside diameter of sleeve, <strong>D = OD + 2&middot;GAP + 2&middot;THK</strong><br>
                 <span>GAP</span> &ndash; radial clearance between sleeve bore and pipe OD [mm]<br>
                 <span>S</span> &ndash; allowable stress of sleeve material<br>
-                <span>E</span> &ndash; weld joint efficiency (0.80 or 1.00)<br>
+                <span>E</span> &ndash; weld joint efficiency (default <strong>0.80</strong>; 1.00 if 100% RT)<br>
                 <span>Y</span> &ndash; temperature coefficient (ASME B31.3 Table 304.1.1). Page default <strong>0.4</strong> is the usual value for <strong>ferritic</strong> steels at <strong>T ≤ 482&nbsp;°C</strong> (≤ 900&nbsp;°F), with other conditions per the code; change if your case differs.
             </div>
         </div>
@@ -182,12 +207,12 @@
         <div class="formula-results" id="outputResultsCh2">
             <div class="output-grid">
                 <div class="result-card">
-                    <div class="result-label" id="outThicknessLabelCh2">Required sleeve thickness (incl. CA)</div>
+                    <div class="result-label" id="outThicknessLabelCh2" data-i18n="ui.reqThk">Required sleeve thickness (incl. CA)</div>
                     <div class="result-value" id="outTminCh2">&mdash;</div>
                     <div class="result-unit">mm</div>
                 </div>
                 <div class="result-card">
-                    <div class="result-label">Sleeve Length</div>
+                    <div class="result-label" data-i18n="ui.sleeveLen">Sleeve Length</div>
                     <div class="result-value" id="outLCh2">&mdash;</div>
                     <div class="result-unit">mm</div>
                 </div>
@@ -207,9 +232,9 @@
 
     <!-- PARALLEL: high-pressure formula (Ch. IX) -->
     <div class="card parallel-section">
-        <div class="card-title">OUTPUT DATA &mdash; high pressure</div>
+        <div class="card-title" data-i18n="ui.outputHp">OUTPUT DATA — high pressure</div>
         <div class="formula-box" id="formulaCh9Box">
-            <div class="formula-title">ASME B31.3, Chapter IX &mdash; High Pressure <span class="formula-regime">(P ≥ 690 bar)</span></div>
+            <div class="formula-title" data-i18n="ui.ch9Title">ASME B31.3, Chapter IX — High Pressure (P ≥ 690 bar)</div>
             <div class="formula formula--ch9">
                 t =
                 <span class="formula-ch9-core">((D &minus; 2 &middot; CA) / 2) &middot; (1 &minus; exp(&minus;1.155 &middot; P / S))</span>
@@ -227,12 +252,12 @@
         <div class="formula-results" id="outputResultsCh9" hidden>
             <div class="output-grid">
                 <div class="result-card">
-                    <div class="result-label" id="outThicknessLabelCh9">Required sleeve thickness (incl. CA)</div>
+                    <div class="result-label" id="outThicknessLabelCh9" data-i18n="ui.reqThk">Required sleeve thickness (incl. CA)</div>
                     <div class="result-value" id="outTminCh9">&mdash;</div>
                     <div class="result-unit">mm</div>
                 </div>
                 <div class="result-card">
-                    <div class="result-label">Sleeve Length</div>
+                    <div class="result-label" data-i18n="ui.sleeveLen">Sleeve Length</div>
                     <div class="result-value" id="outLCh9">&mdash;</div>
                     <div class="result-unit">mm</div>
                 </div>
@@ -252,11 +277,12 @@
 
     <!-- LOG -->
     <div class="card log-section">
-        <div class="card-title">Calculation Log</div>
+        <div class="card-title" data-i18n="ui.calcLog">Calculation Log</div>
         <div class="log-container" id="logContainer"></div>
         <div class="log-actions">
-            <button class="btn btn-secondary" id="btnExportPng" disabled>Export to PNG</button>
-            <button class="btn btn-secondary" id="btnCopyLog" disabled>Copy to Clipboard</button>
+            <button class="btn btn-secondary" id="btnExportPng" disabled data-i18n="ui.exportPng">Export to PNG</button>
+            <button class="btn btn-secondary" id="btnExportPdf" disabled data-i18n="ui.exportPdf">Export to PDF</button>
+            <button class="btn btn-secondary" id="btnCopyLog" disabled data-i18n="ui.copyLog">Copy to Clipboard</button>
         </div>
     </div>
 
@@ -344,10 +370,12 @@
   }
 </style>
 
-<script src="table-a1.js?v=1.0.0"></script>
-<script src="table-k1.js?v=1.0.0"></script>
-<script src="materials.js?v=1.0.0"></script>
-<script src="app.js?v=1.0.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script src="i18n.js?v=1.1.0"></script>
+<script src="table-a1.js?v=1.1.0"></script>
+<script src="table-k1.js?v=1.1.0"></script>
+<script src="materials.js?v=1.1.0"></script>
+<script src="app.js?v=1.1.0"></script>
 
 </body>
 </html>

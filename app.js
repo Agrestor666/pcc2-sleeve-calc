@@ -2,7 +2,7 @@
 const P_HP_THRESHOLD_BAR = 690;
 
 /** Semantic version — update with each release; see CHANGELOG.md */
-const APP_VERSION = "1.0.0";
+const APP_VERSION = "1.1.0";
 const CODE_BASIS = "ASME B31.3-2024 (Table A-1 / K-1, SI)";
 
 const REGIME = { CH2: "ch2", CH9: "ch9" };
@@ -41,10 +41,99 @@ function sleeveOutsideDiameter(OD, GAP, THK) {
 /* ── Initialization ── */
 
 function init() {
+    initTheme();
+    initLanguage();
     populateMaterials();
     bindEvents();
+    initHelpModal();
+    applyI18nToDom();
+    renderHelpModalBody();
     updatePressureUI();
     renderAppVersion();
+}
+
+function getTheme() {
+    return document.documentElement.getAttribute("data-theme") || "dark";
+}
+
+function initTheme() {
+    const saved = localStorage.getItem("pcc2-theme");
+    const theme = saved === "light" ? "light" : "dark";
+    applyTheme(theme, false);
+    $("btnTheme").addEventListener("click", () => {
+        applyTheme(getTheme() === "dark" ? "light" : "dark");
+    });
+}
+
+function applyTheme(theme, refreshI18n = true) {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("pcc2-theme", theme);
+    const icon = $("btnThemeIcon");
+    const btn = $("btnTheme");
+    if (icon) icon.textContent = theme === "light" ? "\u263E" : "\u2600";
+    if (btn) {
+        btn.setAttribute("data-i18n-title", theme === "light" ? "ui.themeDark" : "ui.themeLight");
+        if (refreshI18n) btn.title = t(btn.getAttribute("data-i18n-title"));
+    }
+}
+
+function initLanguage() {
+    const saved = localStorage.getItem("pcc2-lang");
+    if (saved && I18N_LOCALES.includes(saved)) setLanguage(saved);
+    else setLanguage("en");
+
+    document.querySelectorAll(".lang-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            setLanguage(btn.getAttribute("data-lang"));
+            applyI18nToDom();
+            renderHelpModalBody();
+            syncHelpAppVersion();
+            updatePressureUI();
+            renderAppVersion();
+        });
+    });
+}
+
+function syncHelpAppVersion() {
+    const verEl = document.getElementById("helpAppVersion");
+    if (verEl) verEl.textContent = `v${APP_VERSION} · ${CODE_BASIS}`;
+}
+
+function refreshLocaleUi() {
+    applyI18nToDom();
+    renderHelpModalBody();
+    syncHelpAppVersion();
+    updatePressureUI();
+    renderAppVersion();
+}
+
+function initHelpModal() {
+    const modal = $("helpModal");
+    const btnHelp = $("btnHelp");
+    const btnClose = $("btnHelpClose");
+
+    const openHelp = () => {
+        renderHelpModalBody();
+        syncHelpAppVersion();
+        modal.hidden = false;
+        document.body.classList.add("modal-open");
+        btnClose.focus();
+    };
+
+    const closeHelp = () => {
+        modal.hidden = true;
+        document.body.classList.remove("modal-open");
+        btnHelp.focus();
+    };
+
+    btnHelp.addEventListener("click", openHelp);
+    btnClose.addEventListener("click", closeHelp);
+    modal.addEventListener("click", e => {
+        if (e.target === modal) closeHelp();
+    });
+    document.addEventListener("keydown", e => {
+        if (e.key === "Escape" && !modal.hidden) closeHelp();
+    });
 }
 
 function renderAppVersion() {
@@ -56,8 +145,8 @@ function renderAppVersion() {
 
 function buildLogVersionLines() {
     return [
-        `Calculator version             v${APP_VERSION}`,
-        `Code basis                     ${CODE_BASIS}`
+        t("log.calcVer", { ver: APP_VERSION }),
+        t("log.codeBasis", { basis: CODE_BASIS })
     ];
 }
 
@@ -82,6 +171,7 @@ function bindEvents() {
 
     $("btnCalc").addEventListener("click", runCalculation);
     $("btnExportPng").addEventListener("click", exportPng);
+    $("btnExportPdf").addEventListener("click", exportPdf);
     $("btnCopyLog").addEventListener("click", copyLog);
 }
 
@@ -113,12 +203,10 @@ function updatePressureUI() {
         banner.hidden = true;
     } else if (hp) {
         banner.hidden = false;
-        banner.textContent =
-            `P = ${P} bar ≥ ${P_HP_THRESHOLD_BAR} bar — Chapter IX Eq. (34a) active; Chapter II formula shown inactive.`;
+        banner.textContent = t("ui.bannerHp", { p: P, thr: P_HP_THRESHOLD_BAR });
     } else {
         banner.hidden = false;
-        banner.textContent =
-            `P = ${P} bar < ${P_HP_THRESHOLD_BAR} bar — Chapter II formula active; high-pressure formula shown inactive.`;
+        banner.textContent = t("ui.bannerCh2", { p: P, thr: P_HP_THRESHOLD_BAR });
     }
 
     updateK1StressDisplay();
@@ -139,14 +227,14 @@ function updateA1StressDisplay() {
     const tmax = parseFloat($("tmax").value);
     if (!mat || isNaN(tmax)) {
         el.hidden = false;
-        el.textContent = "Select material and Tmax to look up S in Table A-1.";
+        el.textContent = t("ui.selectA1");
         return;
     }
 
     const a1 = lookupA1Stress(mat, tmax);
     if (!a1) {
         el.hidden = false;
-        el.textContent = `No Table A-1 data for “${mat}” at ${tmax} °C — check material or edition.`;
+        el.textContent = t("ui.noA1", { mat, tmax });
         return;
     }
 
@@ -170,14 +258,14 @@ function updateK1StressDisplay() {
     const tmax = parseFloat($("tmax").value);
     if (!mat || isNaN(tmax)) {
         el.hidden = false;
-        el.textContent = "Select material and Tmax to look up S in Table K-1.";
+        el.textContent = t("ui.selectK1");
         return;
     }
 
     const k1 = lookupK1Stress(mat, tmax);
     if (!k1) {
         el.hidden = false;
-        el.textContent = `No Table K-1 data for “${mat}” at ${tmax} °C — check material or edition.`;
+        el.textContent = t("ui.noK1", { mat, tmax });
         return;
     }
 
@@ -255,18 +343,18 @@ function validateCh2(inp) {
     if (!yOk) ok = false;
 
     if (!inp.a1) {
-        showToast(`Table A-1: no allowable stress for ${inp.mat} at ${inp.Tmax} °C.`, true);
+        showToast(t("toast.noA1", { mat: inp.mat, tmax: inp.Tmax }), true);
         ok = false;
     }
 
     if (inp.D <= 0) {
-        showToast("Sleeve outside diameter D = OD + 2·GAP + 2·THK must be > 0.", true);
+        showToast(t("toast.dInvalid"), true);
         ok = false;
     }
 
     const denominator = 2 * (inp.a1.bar * inp.E + inp.P * inp.Y);
     if (ok && denominator <= 0) {
-        showToast("Denominator 2·(S·E + P·Y) ≤ 0 — check S, E, P, and Y.", true);
+        showToast(t("toast.denomInvalid"), true);
         ok = false;
     }
 
@@ -275,12 +363,12 @@ function validateCh2(inp) {
 
 function validateCh9(inp) {
     if (!inp.k1) {
-        showToast(`Table K-1: no allowable stress for ${inp.mat} at ${inp.Tmax} °C.`, true);
+        showToast(t("toast.noK1", { mat: inp.mat, tmax: inp.Tmax }), true);
         return false;
     }
 
     if (inp.D - 2 * inp.CA <= 0) {
-        showToast("Ch. IX: require D − 2·CA > 0 (D = OD + 2·GAP + 2·THK; check OD, GAP, THK, CA).", true);
+        showToast(t("toast.ch9dInvalid"), true);
         return false;
     }
 
@@ -337,7 +425,7 @@ function computeCh9Thickness({ D, CA, P, S }) {
 
 function runCalculation() {
     if (!validateCommon()) {
-        showToast("Please fix invalid fields", true);
+        showToast(t("toast.fixFields"), true);
         return;
     }
 
@@ -353,8 +441,9 @@ function runCalculation() {
     }
 
     $("btnExportPng").disabled = false;
+    $("btnExportPdf").disabled = false;
     $("btnCopyLog").disabled = false;
-    showToast("Calculation complete");
+    showToast(t("toast.calcDone"));
 }
 
 function runCh2Calculation(inp) {
@@ -395,9 +484,7 @@ function checkThicknessAdequacy(tRequired, THK, regime) {
 
     if (tRequired > THK) {
         const tFmt = isCh9 ? tRequired.toFixed(3) : tRequired.toFixed(1);
-        textEl.textContent =
-            `Calculated t = ${tFmt} mm exceeds assumed sleeve THK = ${THK} mm. ` +
-            `Increase THK to at least ${tFmt} mm.`;
+        textEl.textContent = t("ui.alertThk", { t: tFmt, thk: THK });
         alertEl.hidden = false;
     } else {
         alertEl.hidden = true;
@@ -426,21 +513,23 @@ function renderMaterialInfo(inp, D, regime, S_bar) {
     if (isCh9) {
         const k1 = inp.k1;
         const k1txt = `S = ${k1.mpa} MPa (${S_bar} bar) @ ${inp.Tmax} °C`;
-        textEl.textContent =
-            `Material: ${inp.mat}  |  ${k1txt}  |  D = ${D} mm  |  P = ${inp.P} bar`;
+        textEl.textContent = t("ui.matInfoCh9", {
+            mat: inp.mat, mpa: k1.mpa, bar: S_bar, tmax: inp.Tmax, d: D, p: inp.P
+        });
     } else {
         const a1 = inp.a1;
         const a1txt = `S = ${a1.mpa} MPa (${S_bar} bar) @ ${inp.Tmax} °C`;
-        textEl.textContent =
-            `Material: ${inp.mat}  |  ${a1txt}  |  E = ${inp.E}  |  D = ${D.toFixed(1)} mm`;
+        textEl.textContent = t("ui.matInfoCh2", {
+            mat: inp.mat, mpa: a1.mpa, bar: S_bar, tmax: inp.Tmax, e: inp.E, d: D.toFixed(1)
+        });
     }
 }
 
 function buildLogReferenceSection(inp) {
     return [
-        "Reference:",
-        `    PAZ Number (PAZ)             = ${inp.PAZ}`,
-        `    AVIS Number (AVIS)           = ${inp.AVIS}`,
+        t("log.reference"),
+        t("log.paz", { paz: inp.PAZ }),
+        t("log.avis", { avis: inp.AVIS }),
         LOG_RULE
     ];
 }
@@ -448,45 +537,51 @@ function buildLogReferenceSection(inp) {
 function buildLogInputSection(inp) {
     const { s, c, THK, OD, GAP, D, CA, mat, P, Tmax } = inp;
     return [
-        "Input Data:",
+        t("log.inputData"),
         "",
-        "  Size of defect",
-        `    Longitudinal              s  = ${s} mm`,
-        `    Circumferential           c  = ${c} mm  (record only)`,
+        t("log.defectSize"),
+        t("log.longS", { s }),
+        t("log.circC", { c }),
         "",
-        "  Predicted sleeve parameters and parent pipe",
-        `    Wall thickness (sleeve)  THK = ${THK} mm`,
-        `    Outside diameter (pipe)   OD = ${OD} mm`,
-        `    Gap (sleeve bore ↔ pipe) GAP = ${GAP} mm  (radial, each side)`,
-        `    Sleeve outside diameter    D = OD + 2·GAP + 2·THK = ${D.toFixed(1)} mm`,
-        `    Corrosion allowance        CA = ${CA} mm`,
-        `    Material                     = ${mat}`,
+        t("log.sleeveBlock"),
+        t("log.thk", { thk: THK }),
+        t("log.od", { od: OD }),
+        t("log.gap", { gap: GAP }),
+        t("log.dCalc", { d: D.toFixed(1) }),
+        t("log.ca", { ca: CA }),
+        t("log.mat", { mat }),
         "",
-        "  Process info",
-        `    Design pressure            P = ${P} bar`,
-        `    Design temperature      Tmax = ${Tmax} °C`
+        t("log.process"),
+        t("log.p", { p: P }),
+        t("log.tmax", { tmax: Tmax })
     ];
 }
 
 function buildLogFooter(L, thicknessLine) {
     return [
         LOG_RULE,
-        "Results:",
+        t("log.results"),
         "",
         thicknessLine,
-        `    Sleeve length               L = ${L} mm`,
+        t("log.sleeveL", { L }),
         "",
-        "  Note: Type B sleeve designed for 100% of design",
-        "  pressure — no credit for remaining carrier pipe wall.",
+        ...t("log.typeBNote"),
         LOG_RULE
     ];
+}
+
+function buildWeldEfficiencyLogNotes(E) {
+    const eLabel = E >= 0.999 ? "1.00" : "0.80";
+    const lines = [t("log.factorE", { e: eLabel })];
+    lines.push(...(E >= 0.999 ? t("log.eNote100") : t("log.eNote80")));
+    return lines;
 }
 
 function renderLogCh2(inp, D, denominator, t_pressure, Ts, L, S) {
     const { P, CA, Y, E, mat, Tmax, a1, OD, GAP, THK } = inp;
     const a1lines = [
         `    Table A-1 (B31.3-2024, SI): S = ${a1.mpa} MPa = ${S} bar`,
-        `    Tmax = ${Tmax} °C, interpolated per Appendix A`,
+        t("log.tmaxA1", { tmax: Tmax }),
         a1.logLine ? `    ${a1.logLine}` : `    ${a1.note}`
     ];
     const lines = [
@@ -494,22 +589,22 @@ function renderLogCh2(inp, D, denominator, t_pressure, Ts, L, S) {
         "",
         ...buildLogVersionLines(),
         "",
-        "Sleeve Type B — Calculation Note",
-        "Per ASME PCC-2 Art. 2.6 / ASME B31.3 Chapter II",
-        `Design pressure P = ${P} bar (< ${P_HP_THRESHOLD_BAR} bar → Chapter II)`,
+        t("log.noteTitle"),
+        t("log.ch2Hdr"),
+        t("log.ch2P", { p: P, thr: P_HP_THRESHOLD_BAR }),
         LOG_RULE,
         "",
         ...buildLogInputSection(inp),
         ...a1lines,
-        `    Allowable stress           S = ${S} bar`,
-        `    Coefficient                Y = ${Y}  (B31.3 Table 304.1.1; default 0.4 → ferritic, T ≤ 482 °C typical)`,
+        t("log.allowS", { S }),
+        t("log.coeffY", { Y }),
         "",
-        "  Weld joint efficiency",
-        `    Factor                     E = ${E}`,
-        `    D = OD + 2·GAP + 2·THK = ${OD} + 2×${GAP} + 2×${THK} = ${D.toFixed(1)} mm`,
+        t("log.weld"),
+        ...buildWeldEfficiencyLogNotes(E),
+        t("log.dDetail", { od: OD, gap: GAP, thk: THK, d: D.toFixed(1) }),
         "",
         LOG_RULE,
-        "Formula (Chapter II):",
+        t("log.formulaCh2"),
         "",
         "    D = OD + 2·GAP + 2·THK",
         "    t = (P · D) / (2 · (S · E + P · Y)) + CA",
@@ -517,14 +612,11 @@ function renderLogCh2(inp, D, denominator, t_pressure, Ts, L, S) {
         `    t_pressure = ${(P * D).toFixed(1)} / ${denominator.toFixed(1)} = ${t_pressure.toFixed(1)} mm`,
         `    t = t_pressure + CA = ${t_pressure.toFixed(1)} + ${CA} = ${Ts.toFixed(1)} mm`,
         "",
-        ...buildLogFooter(L, `    Required sleeve thickness   t = ${Ts.toFixed(1)} mm  (incl. CA)`),
+        ...buildLogFooter(L, t("log.reqT", { t: Ts.toFixed(1) })),
         "",
-        "  Note (Y): Default 0.4 aligns with ASME B31.3 Table 304.1.1",
-        "  for ferritic steels typically when design temperature ≤ 482 °C",
-        "  (900 °F), with other code conditions; use another Y if not applicable.",
+        ...t("log.yNote"),
         "",
-        "  Note (S): Table A-1 from B31.3-2024 Appendix A (A1.pdf, SI units);",
-        "  materials without an A-1 row use conservative mapping — verify."
+        ...t("log.sNoteA1")
     ];
 
     $("logContainer").textContent = lines.join("\n");
@@ -535,7 +627,7 @@ function renderLogCh9(inp, S, t, t_pressure, factor, exponent, expTerm, L) {
     const k1 = inp.k1;
     const k1lines = [
         `    Table K-1 (B31.3-2024, SI): S = ${k1.mpa} MPa = ${k1.bar} bar`,
-        `    Tmax = ${Tmax} °C, interpolated per Appendix K`,
+        t("log.tmaxK1", { tmax: Tmax }),
         k1.logLine ? `    ${k1.logLine}` : `    ${k1.note}`
     ];
 
@@ -544,16 +636,16 @@ function renderLogCh9(inp, S, t, t_pressure, factor, exponent, expTerm, L) {
         "",
         ...buildLogVersionLines(),
         "",
-        "Sleeve Type B — Calculation Note",
-        "Per ASME PCC-2 Art. 2.6 / ASME B31.3 Chapter IX (high pressure)",
-        `Design pressure P = ${P} bar (≥ ${P_HP_THRESHOLD_BAR} bar → Eq. 34a)`,
+        t("log.noteTitle"),
+        t("log.ch9Hdr"),
+        t("log.ch9P", { p: P, thr: P_HP_THRESHOLD_BAR }),
         LOG_RULE,
         "",
         ...buildLogInputSection(inp),
         ...k1lines,
         "",
         LOG_RULE,
-        "Formula (K304.1.2 — Eq. 34a):",
+        t("log.formulaCh9"),
         "",
         "    D = OD + 2·GAP + 2·THK",
         "    t = ((D − 2·CA) / 2) · (1 − exp(−1.155 · P / S)) + CA",
@@ -563,10 +655,9 @@ function renderLogCh9(inp, S, t, t_pressure, factor, exponent, expTerm, L) {
         `    t_pressure = ${factor.toFixed(4)} × (1 − ${expTerm.toFixed(6)}) = ${t_pressure.toFixed(4)} mm`,
         `    t = t_pressure + CA = ${t_pressure.toFixed(4)} + ${CA} = ${t.toFixed(4)} mm`,
         "",
-        ...buildLogFooter(L, `    Required sleeve thickness   t = ${t.toFixed(3)} mm  (incl. CA)`),
+        ...buildLogFooter(L, t("log.reqT", { t: t.toFixed(3) })),
         "",
-        "  Note (S): Table K-1 from B31.3-2024 Appendix K (K1.pdf, SI units);",
-        "  materials without a K-1 row use conservative mapping — verify."
+        ...t("log.sNoteK1")
     ];
 
     $("logContainer").textContent = lines.join("\n");
@@ -574,9 +665,16 @@ function renderLogCh9(inp, S, t, t_pressure, factor, exponent, expTerm, L) {
 
 /* ── Export ── */
 
-function exportPng() {
+function getLogExportFilename(ext) {
+    const paz = ($("paz").value || "").trim().replace(/[^\w.-]+/g, "_");
+    const avis = ($("avis").value || "").trim().replace(/[^\w.-]+/g, "_");
+    const base = paz && avis ? `SleeveCalc_${paz}_${avis}` : "SleeveCalc_Report";
+    return `${base}.${ext}`;
+}
+
+function buildLogCanvas() {
     const text = $("logContainer").textContent;
-    if (!text) return;
+    if (!text) return null;
 
     const lines = text.split("\n");
     const font = "13px Consolas, 'Cascadia Code', monospace";
@@ -597,35 +695,93 @@ function exportPng() {
     canvas.width = maxW + padX * 2;
     canvas.height = lines.length * lineHeight + padY * 2;
 
-    ctx.fillStyle = "#1a1e24";
+    const bg = getComputedStyle(document.documentElement).getPropertyValue("--log-export-bg").trim() || "#1a1e24";
+    const fg = getComputedStyle(document.documentElement).getPropertyValue("--log-export-text").trim() || "#e6edf3";
+    const rule = getComputedStyle(document.documentElement).getPropertyValue("--log-export-rule").trim() || "#3d444d";
+
+    ctx.fillStyle = bg;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "#22272e";
+    ctx.fillStyle = rule;
     ctx.fillRect(0, 0, canvas.width, 4);
 
     ctx.font = font;
-    ctx.fillStyle = "#e6edf3";
     ctx.textBaseline = "top";
 
     for (let i = 0; i < lines.length; i++) {
-        ctx.fillStyle = lines[i].startsWith("═") ? "#3d444d" : "#e6edf3";
+        ctx.fillStyle = lines[i].startsWith("═") ? rule : fg;
         ctx.fillText(lines[i], padX, padY + i * lineHeight);
     }
+
+    return canvas;
+}
+
+function exportPng() {
+    const canvas = buildLogCanvas();
+    if (!canvas) return;
 
     canvas.toBlob(blob => {
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = "SleeveCalc_Report.png";
+        a.download = getLogExportFilename("png");
         a.click();
         URL.revokeObjectURL(a.href);
-        showToast("PNG exported");
+        showToast(t("toast.pngDone"));
     }, "image/png");
+}
+
+function exportPdf() {
+    const canvas = buildLogCanvas();
+    if (!canvas) return;
+
+    if (!window.jspdf?.jsPDF) {
+        showToast(t("toast.pdfLib"), true);
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 24;
+    const printableWidth = pageWidth - margin * 2;
+    const printableHeight = pageHeight - margin * 2;
+    const scale = printableWidth / canvas.width;
+    const sliceHeightPx = Math.floor(printableHeight / scale);
+
+    let y = 0;
+    let pageIndex = 0;
+
+    while (y < canvas.height) {
+        const sliceH = Math.min(sliceHeightPx, canvas.height - y);
+        const slice = document.createElement("canvas");
+        slice.width = canvas.width;
+        slice.height = sliceH;
+        const sctx = slice.getContext("2d");
+        sctx.drawImage(canvas, 0, y, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
+
+        if (pageIndex > 0) pdf.addPage();
+        pdf.addImage(
+            slice.toDataURL("image/png"),
+            "PNG",
+            margin,
+            margin,
+            printableWidth,
+            sliceH * scale
+        );
+
+        y += sliceH;
+        pageIndex += 1;
+    }
+
+    pdf.save(getLogExportFilename("pdf"));
+    showToast(t("toast.pdfDone"));
 }
 
 function copyLog() {
     const text = $("logContainer").textContent;
     if (!text) return;
-    navigator.clipboard.writeText(text).then(() => showToast("Copied to clipboard"));
+    navigator.clipboard.writeText(text).then(() => showToast(t("toast.copied")));
 }
 
 /* ── Toast ── */

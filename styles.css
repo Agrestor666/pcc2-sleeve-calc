@@ -14,6 +14,27 @@
     --orange: #d29922;
     --input-bg: #161b22;
     --radius: 8px;
+    --log-export-bg: #1a1e24;
+    --log-export-text: #e6edf3;
+    --log-export-rule: #3d444d;
+}
+
+[data-theme="light"] {
+    --bg: #eef1f5;
+    --surface: #ffffff;
+    --surface2: #f6f8fa;
+    --border: #d0d7de;
+    --text: #1f2328;
+    --text-dim: #656d76;
+    --accent: #0969da;
+    --accent-hover: #0550ae;
+    --red: #cf222e;
+    --green: #1a7f37;
+    --orange: #9a6700;
+    --input-bg: #ffffff;
+    --log-export-bg: #ffffff;
+    --log-export-text: #1f2328;
+    --log-export-rule: #d0d7de;
 }
 
 body {
@@ -32,7 +53,16 @@ header {
     padding: 16px 32px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 16px;
+}
+
+.header-main {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    min-width: 0;
 }
 
 header h1 {
@@ -49,6 +79,268 @@ header .badge {
     border-radius: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+.btn-help {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--accent);
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-family: inherit;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.btn-help:hover {
+    background: var(--accent);
+    color: #0d1117;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.25);
+}
+
+.btn-help:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.header-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.lang-switcher {
+    display: flex;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface2);
+}
+
+.lang-btn {
+    padding: 6px 10px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background 0.15s, color 0.15s;
+}
+
+.lang-btn:hover {
+    color: var(--text);
+    background: var(--border);
+}
+
+.lang-btn--active {
+    background: var(--accent);
+    color: #fff;
+}
+
+[data-theme="light"] .lang-btn--active {
+    color: #fff;
+}
+
+.lang-btn + .lang-btn {
+    border-left: 1px solid var(--border);
+}
+
+.btn-theme {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--accent);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.btn-theme:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+}
+
+[data-theme="light"] .btn-theme:hover {
+    box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.2);
+}
+
+.btn-theme:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+}
+
+.modal-overlay[hidden] {
+    display: none;
+}
+
+.modal-panel {
+    width: 100%;
+    max-width: 720px;
+    max-height: min(85vh, 720px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    flex-shrink: 0;
+}
+
+.modal-header h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.modal-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
+}
+
+.modal-close:hover {
+    background: var(--border);
+    color: var(--text);
+}
+
+.modal-body {
+    padding: 20px 24px 24px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.modal-section {
+    margin-bottom: 24px;
+}
+
+.modal-section:last-child {
+    margin-bottom: 0;
+}
+
+.modal-section h3 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin: 0 0 10px;
+}
+
+.modal-section p {
+    margin: 0 0 10px;
+    color: var(--text);
+}
+
+.modal-section ul {
+    margin: 0 0 10px;
+    padding-left: 1.25rem;
+    color: var(--text-dim);
+}
+
+.modal-section li {
+    margin-bottom: 6px;
+}
+
+.modal-section li strong {
+    color: var(--text);
+}
+
+.modal-section a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.modal-section a:hover {
+    text-decoration: underline;
+}
+
+.modal-disclaimer {
+    margin-top: 12px !important;
+    padding: 12px 14px;
+    border-left: 3px solid var(--orange);
+    background: rgba(210, 153, 34, 0.08);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.85rem;
+    color: var(--text-dim) !important;
+}
+
+.modal-figure {
+    margin: 0 0 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f6f8fa;
+}
+
+.modal-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    vertical-align: middle;
+}
+
+.modal-figure figcaption {
+    padding: 12px 14px;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--text-dim);
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
 }
 
 .app-footer {
@@ -455,6 +747,7 @@ select {
 
 .log-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
 }
 
