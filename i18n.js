@@ -64,7 +64,7 @@ const I18N = {
             exportPdf: "Export to PDF",
             copyLog: "Copy to Clipboard",
             closeHelp: "Close help",
-            helpModalTitle: "Help & technical overview",
+            helpModalTitle: "Technical reference & symbol glossary",
             selectA1: "Select material and Tmax to look up S in Table A-1.",
             selectK1: "Select material and Tmax to look up S in Table K-1.",
             noA1: "No Table A-1 data for “{mat}” at {tmax} °C — check material or edition.",
@@ -233,7 +233,7 @@ const I18N = {
             exportPdf: "Eksport do PDF",
             copyLog: "Kopiuj do schowka",
             closeHelp: "Zamknij pomoc",
-            helpModalTitle: "Pomoc i przegląd techniczny",
+            helpModalTitle: "Opis techniczny i słownik symboli",
             selectA1: "Wybierz materiał i Tmax, aby odczytać S z tabeli A-1.",
             selectK1: "Wybierz materiał i Tmax, aby odczytać S z tabeli K-1.",
             noA1: "Brak danych tabeli A-1 dla „{mat}” przy {tmax} °C — sprawdź materiał lub wydanie.",
@@ -397,7 +397,7 @@ const I18N = {
             exportPdf: "Exporter en PDF",
             copyLog: "Copier dans le presse-papiers",
             closeHelp: "Fermer l'aide",
-            helpModalTitle: "Aide et aperçu technique",
+            helpModalTitle: "Référence technique et glossaire",
             selectA1: "Sélectionnez matériau et Tmax pour S dans la table A-1.",
             selectK1: "Sélectionnez matériau et Tmax pour S dans la table K-1.",
             noA1: "Pas de données table A-1 pour « {mat} » à {tmax} °C — vérifier matériau ou édition.",
@@ -561,7 +561,7 @@ const I18N = {
             exportPdf: "Exportar PDF",
             copyLog: "Copiar para área de transferência",
             closeHelp: "Fechar ajuda",
-            helpModalTitle: "Ajuda e visão técnica",
+            helpModalTitle: "Referência técnica e glossário",
             selectA1: "Selecione material e Tmax para obter S na tabela A-1.",
             selectK1: "Selecione material e Tmax para obter S na tabela K-1.",
             noA1: "Sem dados tabela A-1 para «{mat}» a {tmax} °C — verifique material ou edição.",
@@ -730,102 +730,6 @@ function applyI18nToDom() {
 
 function renderHelpModalBody() {
     const body = document.getElementById("helpModalBody");
-    if (!body) return;
-    const L = currentLang;
-    const blocks = {
-        en: helpHtmlEn(),
-        pl: helpHtmlPl(),
-        fr: helpHtmlFr(),
-        pt: helpHtmlPt()
-    };
-    body.innerHTML = blocks[L] || blocks.en;
-}
-
-function helpHtmlEn() {
-    return `
-<section class="modal-section"><h3>This application</h3>
-<p>Web tool for <strong>Type B full encirclement repair sleeve</strong> minimum wall thickness per <strong>ASME PCC-2 Art. 2.6</strong> and <strong>ASME B31.3</strong> (<span id="helpAppVersion"></span>).</p>
-<ul><li><strong>P &lt; 690 bar</strong> — Ch. II, Table A-1, default <strong>E = 0.80</strong>.</li>
-<li><strong>P ≥ 690 bar</strong> — Ch. IX Eq. (34a), Table K-1.</li>
-<li><strong>D = OD + 2·GAP + 2·THK</strong>; <strong>L = s + 100 mm</strong>.</li></ul>
-<p class="modal-disclaimer">Engineering support only — verify code edition, tables, and NDE before formal use.</p></section>
-<section class="modal-section"><h3>ASME PCC-2</h3>
-<p><strong>PCC-2</strong> covers repair of pressure equipment and piping. <strong>Article 2.6</strong> addresses full encirclement sleeves over defects or thin areas.</p></section>
-<section class="modal-section"><h3>Type B sleeve</h3>
-<p><strong>Type B</strong> carries <strong>100% design pressure</strong>; carrier pipe wall is <strong>not credited</strong>.</p>
-<figure class="modal-figure"><img src="type-b-sleeve-diagram.png" alt="Type B sleeve schematic" width="800" height="450" loading="lazy">
-<figcaption>Conceptual schematic — confirm against PCC-2 and project drawings.</figcaption></figure>
-<ul><li>Localized defect length <em>s</em>; annular <strong>GAP</strong>; weld <strong>E</strong>; <strong>CA</strong> added to pressure thickness.</li></ul></section>
-<section class="modal-section"><h3>Thickness: mill tolerance &amp; TR</h3>
-<p><strong>t<sub>calculated</sub></strong> — pressure thickness + CA. <strong>Mill tolerance</strong> (Totalenergies sheet) is applied to <strong>sleeve OD D</strong>: t after mill = t<sub>calculated</sub> / (1 − f), with f = 12.5% for D &lt; 457.2&nbsp;mm and 8% for D ≥ 457.2&nbsp;mm (editable).</p>
-<p><strong>TR</strong> — retirement thickness per <strong>GS-EP-PVV-112 §5.2.2.3</strong> (column TR in the Totalenergies B31.3 wall-thickness sheet). The app brackets <strong>pipe OD</strong> (input field) to the two adjacent <strong>nominal pipe sizes in that table</strong> (e.g. OD 95&nbsp;mm → 3&quot; and 4&quot;). Checks: t after mill ≥ TR for each bracket nominal; final <strong>t<sub>required</sub> = max(t after mill, TR<sub>lower</sub>, TR<sub>upper</sub>)</strong>.</p>
-<p>Assumed sleeve <strong>THK</strong> is compared to this final t<sub>required</sub>.</p></section>
-<section class="modal-section"><h3>Related</h3>
-<p>Stresses from <strong>B31.3-2024</strong> Tables A-1 / K-1 (SI). Legacy AutoCAD: <a href="https://github.com/Agrestor666/ASME_PCC_2" target="_blank" rel="noopener">ASME_PCC_2</a>.</p></section>`;
-}
-
-function helpHtmlPl() {
-    return `
-<section class="modal-section"><h3>Aplikacja</h3>
-<p>Narzędzie do grubości <strong>rękawa naprawczego typu B</strong> wg <strong>ASME PCC-2 art. 2.6</strong> i <strong>ASME B31.3</strong> (<span id="helpAppVersion"></span>).</p>
-<ul><li><strong>P &lt; 690 bar</strong> — rozdz. II, tabela A-1, domyślnie <strong>E = 0,80</strong>.</li>
-<li><strong>P ≥ 690 bar</strong> — rozdz. IX wzór (34a), tabela K-1.</li>
-<li><strong>D = OD + 2·GAP + 2·THK</strong>; <strong>L = s + 100 mm</strong>.</li></ul>
-<p class="modal-disclaimer">Wsparcie inżynierskie — zweryfikuj wydanie normy, tabele i NDE przed użyciem formalnym.</p></section>
-<section class="modal-section"><h3>ASME PCC-2</h3>
-<p><strong>PCC-2</strong> — naprawy aparatury i rurociągów. <strong>Art. 2.6</strong> — rękawy pełnoobwodowe na usterki.</p></section>
-<section class="modal-section"><h3>Rękaw typu B</h3>
-<p><strong>Typ B</strong> na <strong>100% ciśnienia projektowego</strong>; ścianka rury <strong>nie jest kredytowana</strong>.</p>
-<figure class="modal-figure"><img src="type-b-sleeve-diagram.png" alt="Schemat rękawa typu B" width="800" height="450" loading="lazy">
-<figcaption>Schemat orientacyjny — potwierdź z PCC-2 i rysunkiem projektu.</figcaption></figure></section>
-<section class="modal-section"><h3>Grubość: tolerancja wytwórni i TR</h3>
-<p><strong>t<sub>calculated</sub></strong> — grubość ciśnieniowa + CA. <strong>Tolerancja wytwórni</strong> (arkusz Totalenergies) na <strong>średnicę rękawa D</strong>: t po wytwórni = t<sub>calculated</sub> / (1 − f), f = 12,5% dla D &lt; 457,2&nbsp;mm i 8% dla D ≥ 457,2&nbsp;mm (edytowalne).</p>
-<p><strong>TR</strong> — grubość emerytalna wg <strong>GS-EP-PVV-112 §5.2.2.3</strong> (kolumna TR arkusza Totalenergies). Aplikacja dopasowuje <strong>OD rury</strong> do dwóch sąsiednich <strong>nominalów z tabeli</strong> (np. OD 95&nbsp;mm → 3&quot; i 4&quot;). Warunek: t po wytwórni ≥ TR dla każdego nominalu; <strong>t<sub>required</sub> = max(t po wytwórni, TR dolny, TR górny)</strong>.</p>
-<p>Pole <strong>THK</strong> porównywane jest z tym końcowym t<sub>required</sub>.</p></section>
-<section class="modal-section"><h3>Zasoby</h3>
-<p>Tabele <strong>B31.3-2024</strong> A-1 / K-1 (SI). AutoCAD: <a href="https://github.com/Agrestor666/ASME_PCC_2" target="_blank" rel="noopener">ASME_PCC_2</a>.</p></section>`;
-}
-
-function helpHtmlFr() {
-    return `
-<section class="modal-section"><h3>Cette application</h3>
-<p>Outil web pour l'épaisseur d'un <strong>manchon de réparation type B</strong> selon <strong>ASME PCC-2 art. 2.6</strong> et <strong>ASME B31.3</strong> (<span id="helpAppVersion"></span>).</p>
-<ul><li><strong>P &lt; 690 bar</strong> — ch. II, table A-1, <strong>E = 0,80</strong> par défaut.</li>
-<li><strong>P ≥ 690 bar</strong> — ch. IX éq. (34a), table K-1.</li>
-<li><strong>D = OD + 2·GAP + 2·THK</strong> ; <strong>L = s + 100 mm</strong>.</li></ul>
-<p class="modal-disclaimer">Aide à l'ingénierie uniquement — vérifier édition, tables et END avant usage formel.</p></section>
-<section class="modal-section"><h3>ASME PCC-2</h3>
-<p><strong>PCC-2</strong> — réparation équipements sous pression. <strong>Art. 2.6</strong> — manchons pleine circonférence.</p></section>
-<section class="modal-section"><h3>Manchon type B</h3>
-<p><strong>Type B</strong> à <strong>100 % de la pression</strong> ; paroi du tuyau <strong>non créditée</strong>.</p>
-<figure class="modal-figure"><img src="type-b-sleeve-diagram.png" alt="Schéma manchon type B" width="800" height="450" loading="lazy">
-<figcaption>Schéma conceptuel — confirmer avec PCC-2 et plans projet.</figcaption></figure></section>
-<section class="modal-section"><h3>Épaisseur : laminage &amp; TR</h3>
-<p><strong>t<sub>calculated</sub></strong> — épaisseur pression + CA. <strong>Tolérance de laminage</strong> (fiche Totalenergies) sur <strong>D du manchon</strong> : t après laminage = t<sub>calculated</sub> / (1 − f), f = 12,5 % si D &lt; 457,2&nbsp;mm et 8 % si D ≥ 457,2&nbsp;mm (modifiable).</p>
-<p><strong>TR</strong> — épaisseur de retraite selon <strong>GS-EP-PVV-112 §5.2.2.3</strong>. L&apos;application encadre l&apos;<strong>OD tuyau</strong> entre deux <strong>nominaux du tableau</strong> (ex. OD 95&nbsp;mm → 3&quot; et 4&quot;). Vérifications : t après laminage ≥ TR pour chaque nominal ; <strong>t<sub>required</sub> = max(t après laminage, TR<sub>inf</sub>, TR<sub>sup</sub>)</strong>.</p>
-<p>Le <strong>THK</strong> saisi est comparé à ce t<sub>required</sub> final.</p></section>
-<section class="modal-section"><h3>Ressources</h3>
-<p>Tables <strong>B31.3-2024</strong> A-1 / K-1 (SI). AutoCAD : <a href="https://github.com/Agrestor666/ASME_PCC_2" target="_blank" rel="noopener">ASME_PCC_2</a>.</p></section>`;
-}
-
-function helpHtmlPt() {
-    return `
-<section class="modal-section"><h3>Esta aplicação</h3>
-<p>Ferramenta web para espessura de <strong>manga de reparação tipo B</strong> segundo <strong>ASME PCC-2 art. 2.6</strong> e <strong>ASME B31.3</strong> (<span id="helpAppVersion"></span>).</p>
-<ul><li><strong>P &lt; 690 bar</strong> — cap. II, tabela A-1, <strong>E = 0,80</strong> padrão.</li>
-<li><strong>P ≥ 690 bar</strong> — cap. IX eq. (34a), tabela K-1.</li>
-<li><strong>D = OD + 2·GAP + 2·THK</strong>; <strong>L = s + 100 mm</strong>.</li></ul>
-<p class="modal-disclaimer">Apoio de engenharia — verifique edição, tabelas e END antes de uso formal.</p></section>
-<section class="modal-section"><h3>ASME PCC-2</h3>
-<p><strong>PCC-2</strong> — reparação de equipamentos sob pressão. <strong>Art. 2.6</strong> — mangas de circunferência completa.</p></section>
-<section class="modal-section"><h3>Manga tipo B</h3>
-<p><strong>Tipo B</strong> suporta <strong>100% da pressão de projeto</strong>; parede do tubo <strong>não é creditada</strong>.</p>
-<figure class="modal-figure"><img src="type-b-sleeve-diagram.png" alt="Esquema manga tipo B" width="800" height="450" loading="lazy">
-<figcaption>Esquema conceptual — confirmar com PCC-2 e desenhos do projeto.</figcaption></figure></section>
-<section class="modal-section"><h3>Espessura: laminação &amp; TR</h3>
-<p><strong>t<sub>calculated</sub></strong> — espessura de pressão + CA. <strong>Tolerância de laminação</strong> (folha Totalenergies) na <strong>OD da manga D</strong>: t após laminação = t<sub>calculated</sub> / (1 − f), f = 12,5% para D &lt; 457,2&nbsp;mm e 8% para D ≥ 457,2&nbsp;mm (editável).</p>
-<p><strong>TR</strong> — espessura de reforma segundo <strong>GS-EP-PVV-112 §5.2.2.3</strong>. A app faz bracket da <strong>OD do tubo</strong> entre dois <strong>nominais da tabela</strong> (ex. OD 95&nbsp;mm → 3&quot; e 4&quot;). Verificações: t após laminação ≥ TR para cada nominal; <strong>t<sub>required</sub> = max(t após laminação, TR<sub>inf</sub>, TR<sub>sup</sub>)</strong>.</p>
-<p>O <strong>THK</strong> assumido é comparado com este t<sub>required</sub> final.</p></section>
-<section class="modal-section"><h3>Recursos</h3>
-<p>Tabelas <strong>B31.3-2024</strong> A-1 / K-1 (SI). AutoCAD: <a href="https://github.com/Agrestor666/ASME_PCC_2" target="_blank" rel="noopener">ASME_PCC_2</a>.</p></section>`;
+    if (!body || typeof buildHelpModalHtml !== "function") return;
+    body.innerHTML = buildHelpModalHtml(currentLang);
 }

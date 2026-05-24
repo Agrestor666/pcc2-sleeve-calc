@@ -4,6 +4,12 @@ All notable changes to the PCC-2 Sleeve Type B web calculator are documented her
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2026-05-24
+
+### Added
+
+- Help modal: professional **symbol glossary** (P/MAWP, S, Y, E, CA, OD, D, GAP, THK, mill, TR, t<sub>required</sub>, etc.) with normative sources and in-app usage — EN/PL/FR/PT (`help-content.js`).
+
 ## [1.3.0] - 2026-05-24
 
 ### Added
@@ -34,6 +40,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 ### Changed
 
 - Header toolbar: language switcher (EN/PL/FR/PT) and theme toggle.
+
+[1.3.1]: https://github.com/Agrestor666/pcc2-sleeve-calc/releases/tag/v1.3.1
 
 [1.3.0]: https://github.com/Agrestor666/pcc2-sleeve-calc/releases/tag/v1.3.0
 

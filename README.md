@@ -55,6 +55,7 @@ Copy **only these files** into the site root (same folder as `index.html`). No `
 | `SleeveCalc.html` | optional (redirect stub for old URLs; see file) |
 | `constants.js` | yes |
 | `table-tr.js` | yes (retirement thickness TR table) |
+| `help-content.js` | yes (help modal / symbol glossary) |
 | `calc-core.js` | yes |
 | `stress-lookup.js` | yes (load before `table-a1.js` / `table-k1.js`) |
 | `app.js` | yes |
@@ -77,12 +78,13 @@ ASME PCC2/
 ├── SleeveCalc.html           Optional redirect → index (legacy links)
 ├── constants.js, calc-core.js, stress-lookup.js  Shared constants / math / table lookup helpers
 ├── table-tr.js               Retirement thickness TR vs pipe OD (Totalenergies sheet)
+├── help-content.js           Help modal and symbol glossary (EN/PL/FR/PT)
 ├── app.js, i18n.js, styles.css
 ├── table-a1.js, table-k1.js  Table A-1 / K-1 data + per-table lookup wiring (runtime)
 ├── type-b-sleeve-diagram.png Help modal schematic
 ├── materials.js              Legacy fixed S (deprecated)
 ├── favicon.svg, favicon.png
-├── tables/                   A1.pdf, K1.pdf (dev/OCR only — not for hosting)
+├── tables/                   A1.pdf, K1.pdf, Total-THK-calculator.pdf (dev/reference — not for hosting)
 ├── tools/                    Python OCR / table build (not for hosting)
 ├── sitemap.xml, googleaab751f69310ca84.html
 └── README.md

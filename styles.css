@@ -209,7 +209,7 @@ body.modal-open {
 
 .modal-panel {
     width: 100%;
-    max-width: 720px;
+    max-width: min(52rem, 96vw);
     max-height: min(85vh, 720px);
     background: var(--surface);
     border: 1px solid var(--border);
@@ -341,6 +341,133 @@ body.modal-open {
     color: var(--text-dim);
     background: var(--surface2);
     border-top: 1px solid var(--border);
+}
+
+.help-lead {
+    margin: 0 0 12px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    font-size: 0.88rem;
+}
+
+.help-list {
+    margin: 0 0 12px;
+    padding-left: 1.35rem;
+    color: var(--text-dim);
+}
+
+.help-list--compact {
+    font-size: 0.88rem;
+}
+
+.help-list li {
+    margin-bottom: 8px;
+}
+
+.help-list li strong {
+    color: var(--text);
+}
+
+.help-flow {
+    margin: 0;
+    padding-left: 1.35rem;
+    color: var(--text-dim);
+}
+
+.help-flow li {
+    margin-bottom: 10px;
+    padding-left: 4px;
+}
+
+.help-flow li strong {
+    color: var(--text);
+}
+
+.help-glossary-intro {
+    margin: 0 0 16px;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+}
+
+.help-group-title {
+    margin: 18px 0 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+}
+
+.help-group-title:first-of-type {
+    margin-top: 0;
+}
+
+.help-glossary {
+    margin: 0 0 8px;
+    padding: 0;
+}
+
+.help-glossary dt {
+    margin: 14px 0 0;
+    padding: 8px 10px 6px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: rgba(88, 166, 255, 0.08);
+    border-radius: 6px 6px 0 0;
+    border: 1px solid var(--border);
+    border-bottom: none;
+}
+
+.help-glossary dt:first-of-type {
+    margin-top: 0;
+}
+
+.help-glossary dd {
+    margin: 0 0 4px;
+    padding: 10px 12px 12px;
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    background: var(--surface2);
+}
+
+.help-term-name {
+    display: block;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.help-term-def {
+    margin: 0 0 8px;
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: var(--text);
+}
+
+.help-term-meta {
+    margin: 0 0 6px;
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: var(--text-dim);
+}
+
+.help-term-meta:last-child {
+    margin-bottom: 0;
+}
+
+.help-meta-label {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.help-section--glossary {
+    padding-bottom: 4px;
 }
 
 .app-footer {
