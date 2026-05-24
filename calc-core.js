@@ -60,3 +60,60 @@ function applyMillTolerance(D, tCalculated, settings) {
         millBand: mill.band
     };
 }
+
+/**
+ * Bracket pipe OD to adjacent nominal rows in TR_BY_NPS (Totalenergies sheet).
+ * @returns {{ rows: { nps: string, odMm: number, trMm: number }[], trMax: number, pipeOdMm: number }}
+ */
+function bracketRetirementThickness(pipeOdMm) {
+    const table = TR_BY_NPS;
+    if (!table.length) return { rows: [], trMax: 0, pipeOdMm };
+
+    if (pipeOdMm <= table[0].odMm) {
+        const row = table[0];
+        return { rows: [row], trMax: row.trMm, pipeOdMm };
+    }
+    const last = table[table.length - 1];
+    if (pipeOdMm >= last.odMm) {
+        return { rows: [last], trMax: last.trMm, pipeOdMm };
+    }
+
+    let lower = table[0];
+    let upper = last;
+    for (let i = 0; i < table.length; i++) {
+        if (table[i].odMm <= pipeOdMm) lower = table[i];
+        if (table[i].odMm >= pipeOdMm) {
+            upper = table[i];
+            break;
+        }
+    }
+
+    const rows = lower.odMm === upper.odMm ? [lower] : [lower, upper];
+    const trMax = Math.max(...rows.map(r => r.trMm));
+    return { rows, trMax, pipeOdMm };
+}
+
+/** Mill tolerance on sleeve D, then TR floor from bracketed pipe nominals. */
+function applyThicknessWithMillAndTr(sleeveD, tCalculated, millSettings, pipeOdMm) {
+    const mill = applyMillTolerance(sleeveD, tCalculated, millSettings);
+    const tr = bracketRetirementThickness(pipeOdMm);
+    const tAfterMill = mill.tRequired;
+    const tRequired = Math.max(tAfterMill, tr.trMax);
+    const trChecks = tr.rows.map(row => ({
+        nps: row.nps,
+        odMm: row.odMm,
+        trMm: row.trMm,
+        pass: tAfterMill >= row.trMm - 1e-9
+    }));
+    return {
+        tCalculated: mill.tCalculated,
+        tAfterMill,
+        tRequired,
+        millFraction: mill.millFraction,
+        millPct: mill.millPct,
+        millBand: mill.millBand,
+        trBracket: tr,
+        trChecks,
+        trGoverned: tRequired > tAfterMill + 1e-9
+    };
+}

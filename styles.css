@@ -593,6 +593,7 @@ select {
     line-height: 1.35;
     text-transform: none;
     letter-spacing: 0;
+    white-space: pre-line;
 }
 
 .result-card .result-unit {

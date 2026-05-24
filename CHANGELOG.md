@@ -4,6 +4,13 @@ All notable changes to the PCC-2 Sleeve Type B web calculator are documented her
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-05-24
+
+### Added
+
+- **TR** (retirement thickness) floor from Totalenergies sheet (GS-EP-PVV-112 §5.2.2.3): bracket **pipe OD** to adjacent nominal sizes in `table-tr.js` (e.g. 95 mm → 3" and 4"); final `t_required = max(after mill, TR)`.
+- Calculation log and Help sections for mill tolerance and TR.
+
 ## [1.2.0] - 2026-05-24
 
 ### Added
@@ -27,6 +34,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 ### Changed
 
 - Header toolbar: language switcher (EN/PL/FR/PT) and theme toggle.
+
+[1.3.0]: https://github.com/Agrestor666/pcc2-sleeve-calc/releases/tag/v1.3.0
 
 [1.2.0]: https://github.com/Agrestor666/pcc2-sleeve-calc/releases/tag/v1.2.0
 

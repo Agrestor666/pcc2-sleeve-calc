@@ -1,5 +1,5 @@
 /**
- * UI wiring and I/O. Loads after constants.js, calc-core.js, i18n, stress-lookup, table-a1, table-k1, materials.
+ * UI wiring and I/O. Loads after constants.js, table-tr.js, calc-core.js, i18n, stress-lookup, table-a1, table-k1, materials.
  */
 const $ = id => document.getElementById(id);
 
@@ -420,7 +420,7 @@ function readInputs() {
 function buildLogMillSection(inp, D, thick, regime) {
     const { mill } = inp;
     const tCalcFmt = formatThickness(thick.tCalculated, regime);
-    const tReqFmt = formatThickness(thick.tRequired, regime);
+    const tMillFmt = formatThickness(thick.tAfterMill, regime);
     const bandKey = thick.millBand === "large" ? "log.millBandLarge" : "log.millBandSmall";
     return [
         "",
@@ -430,8 +430,35 @@ function buildLogMillSection(inp, D, thick, regime) {
         tEn("log.millLarge", { pct: mill.tolLargePct }),
         tEn(bandKey, { d: D.toFixed(1), pct: thick.millPct }),
         tEn("log.calcT", { t: tCalcFmt }),
-        tEn("log.reqTMill", { tcalc: tCalcFmt, treq: tReqFmt, pct: thick.millPct })
+        tEn("log.reqTMill", { tcalc: tCalcFmt, treq: tMillFmt, pct: thick.millPct })
     ];
+}
+
+function buildLogTrSection(inp, thick, regime) {
+    const tMillFmt = formatThickness(thick.tAfterMill, regime);
+    const tFinalFmt = formatThickness(thick.tRequired, regime);
+    const lines = [
+        "",
+        tEn("log.trBlock"),
+        tEn("log.trRef"),
+        tEn("log.trPipeOd", { od: inp.OD })
+    ];
+    for (const check of thick.trChecks) {
+        const key = check.pass ? "log.trCheckPass" : "log.trCheckFail";
+        lines.push(
+            tEn(key, {
+                nps: check.nps,
+                od: check.odMm,
+                tr: check.trMm,
+                t: tMillFmt
+            })
+        );
+    }
+    if (thick.trGoverned) {
+        lines.push(tEn("log.trFloor", { tmill: tMillFmt, tr: thick.trBracket.trMax, tfinal: tFinalFmt }));
+    }
+    lines.push(tEn("log.reqTFinal", { t: tFinalFmt }));
+    return lines;
 }
 
 function runCalculation() {
@@ -461,7 +488,7 @@ function runCh2Calculation(inp) {
     const S = inp.a1.bar;
     const { D, denominator, t_pressure, L } = computeSleeveCh2({ ...inp, S });
     const tCalculated = t_pressure + inp.CA;
-    const thick = applyMillTolerance(D, tCalculated, inp.mill);
+    const thick = applyThicknessWithMillAndTr(D, tCalculated, inp.mill, inp.OD);
     if (!Number.isFinite(thick.tRequired)) {
         showToast(t("toast.millInvalid"), true);
         return;
@@ -483,7 +510,7 @@ function runCh9Calculation(inp) {
         S
     });
     const L = inp.s + 100;
-    const thick = applyMillTolerance(inp.D, t, inp.mill);
+    const thick = applyThicknessWithMillAndTr(inp.D, t, inp.mill, inp.OD);
     if (!Number.isFinite(thick.tRequired)) {
         showToast(t("toast.millInvalid"), true);
         return;
@@ -524,7 +551,14 @@ function renderResults(thick, L, regime) {
     const mill = readMillSettings();
     const bandKey = thick.millBand === "large" ? "ui.millAppliedLarge" : "ui.millAppliedSmall";
     const meta = $(ids.outMillMeta);
-    meta.textContent = t(bandKey, { pct: thick.millPct, break: mill.odBreakMm });
+    let metaText = t(bandKey, { pct: thick.millPct, break: mill.odBreakMm });
+    if (thick.trGoverned) {
+        metaText += "\n" + t("ui.trGoverned", { tr: formatThickness(thick.trBracket.trMax, regime) });
+    } else if (thick.trChecks.length > 1) {
+        const npsList = thick.trChecks.map(c => c.nps).join(", ");
+        metaText += "\n" + t("ui.trBracketOk", { nps: npsList });
+    }
+    meta.textContent = metaText;
     meta.hidden = false;
     $(ids.outL).textContent = L;
 }
@@ -646,6 +680,7 @@ function renderLogCh2(inp, D, denominator, t_pressure, thick, L, S) {
         `    t_pressure = ${(P * D).toFixed(1)} / ${denominator.toFixed(1)} = ${t_pressure.toFixed(1)} mm`,
         `    t_calculated = t_pressure + CA = ${t_pressure.toFixed(1)} + ${CA} = ${Ts.toFixed(1)} mm`,
         ...buildLogMillSection(inp, D, thick, REGIME.CH2),
+        ...buildLogTrSection(inp, thick, REGIME.CH2),
         "",
         ...buildLogFooter(L, tEn("log.reqT", { t: thick.tRequired.toFixed(1) })),
         "",
@@ -691,6 +726,7 @@ function renderLogCh9(inp, S, t_pressure, thick, factor, exponent, expTerm, L) {
         `    t_pressure = ${factor.toFixed(4)} × (1 − ${expTerm.toFixed(6)}) = ${t_pressure.toFixed(4)} mm`,
         `    t_calculated = t_pressure + CA = ${t_pressure.toFixed(4)} + ${CA} = ${t.toFixed(4)} mm`,
         ...buildLogMillSection(inp, D, thick, REGIME.CH9),
+        ...buildLogTrSection(inp, thick, REGIME.CH9),
         "",
         ...buildLogFooter(L, tEn("log.reqT", { t: thick.tRequired.toFixed(3) })),
         "",
