@@ -592,6 +592,14 @@ function renderMaterialInfo(inp, D, regime, S_bar) {
     }
 }
 
+function buildLogHeader() {
+    return [
+        tEn("log.noteTitle"),
+        LOG_RULE,
+        ""
+    ];
+}
+
 function buildLogReferenceSection(inp) {
     return [
         tEn("log.reference"),
@@ -653,11 +661,11 @@ function renderLogCh2(inp, D, denominator, t_pressure, thick, L, S) {
         a1.logLine ? `    ${a1.logLine}` : `    ${a1.note}`
     ];
     const lines = [
+        ...buildLogHeader(),
         ...buildLogReferenceSection(inp),
         "",
         ...buildLogVersionLines(),
         "",
-        tEn("log.noteTitle"),
         tEn("log.ch2Hdr"),
         tEn("log.ch2P", { p: P, thr: P_HP_THRESHOLD_BAR }),
         LOG_RULE,
@@ -703,11 +711,11 @@ function renderLogCh9(inp, S, t_pressure, thick, factor, exponent, expTerm, L) {
     ];
 
     const lines = [
+        ...buildLogHeader(),
         ...buildLogReferenceSection(inp),
         "",
         ...buildLogVersionLines(),
         "",
-        tEn("log.noteTitle"),
         tEn("log.ch9Hdr"),
         tEn("log.ch9P", { p: P, thr: P_HP_THRESHOLD_BAR }),
         LOG_RULE,
@@ -741,7 +749,7 @@ function renderLogCh9(inp, S, t_pressure, thick, factor, exponent, expTerm, L) {
 function getLogExportFilename(ext) {
     const paz = ($("paz").value || "").trim().replace(/[^\w.-]+/g, "_");
     const avis = ($("avis").value || "").trim().replace(/[^\w.-]+/g, "_");
-    const base = paz && avis ? `SleeveCalc_${paz}_${avis}` : "SleeveCalc_Report";
+    const base = paz && avis ? `Calculation_Note_${paz}_${avis}` : "Calculation_Note";
     return `${base}.${ext}`;
 }
 

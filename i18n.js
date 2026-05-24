@@ -95,7 +95,7 @@ const I18N = {
             avis: "    AVIS Number (AVIS)           = {avis}",
             calcVer: "Calculator version             v{ver}",
             codeBasis: "Code basis                     {basis}",
-            noteTitle: "Sleeve Type B — Calculation Note",
+            noteTitle: "Calculation Note",
             ch2Hdr: "Per ASME PCC-2 Art. 2.6 / ASME B31.3 Chapter II",
             ch2P: "Design pressure P = {p} bar (< {thr} bar → Chapter II)",
             ch9Hdr: "Per ASME PCC-2 Art. 2.6 / ASME B31.3 Chapter IX (high pressure)",
