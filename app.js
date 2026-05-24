@@ -7,6 +7,8 @@ const $ = id => document.getElementById(id);
 const REGIME_DOM_IDS = {
     [REGIME.CH2]: {
         outT: "outTminCh2",
+        outTCalc: "outTcalcCh2",
+        outMillMeta: "outMillMetaCh2",
         outL: "outLCh2",
         alertBox: "alertThkCh2",
         alertText: "alertThkTextCh2",
@@ -16,6 +18,8 @@ const REGIME_DOM_IDS = {
     },
     [REGIME.CH9]: {
         outT: "outTminCh9",
+        outTCalc: "outTcalcCh9",
+        outMillMeta: "outMillMetaCh9",
         outL: "outLCh9",
         alertBox: "alertThkCh9",
         alertText: "alertThkTextCh9",
@@ -24,6 +28,32 @@ const REGIME_DOM_IDS = {
         matInfoI18n: "ui.matInfoCh9"
     }
 };
+
+function readMillSettings() {
+    return {
+        odBreakMm: parseFloat($("mill_od_break").value),
+        tolSmallPct: parseFloat($("mill_tol_small").value),
+        tolLargePct: parseFloat($("mill_tol_large").value)
+    };
+}
+
+function validateMillSettings() {
+    let ok = true;
+    const breakEl = $("mill_od_break");
+    const breakV = parseFloat(breakEl.value);
+    const breakOk = !isNaN(breakV) && breakV > 0;
+    breakEl.classList.toggle("invalid", !breakOk);
+    if (!breakOk) ok = false;
+
+    for (const id of MILL_INPUT_IDS.slice(1)) {
+        const el = $(id);
+        const v = parseFloat(el.value);
+        const valid = !isNaN(v) && v >= 0 && v < 100;
+        el.classList.toggle("invalid", !valid);
+        if (!valid) ok = false;
+    }
+    return ok;
+}
 
 function readPressure() {
     const v = parseFloat($("mawp").value);
@@ -156,7 +186,9 @@ function populateMaterials() {
 }
 
 function bindEvents() {
-    [...REF_INPUT_IDS, ...BASE_INPUT_IDS].forEach(id => $(id).addEventListener("input", onInputChange));
+    [...REF_INPUT_IDS, ...BASE_INPUT_IDS, ...MILL_INPUT_IDS].forEach(id =>
+        $(id).addEventListener("input", onInputChange)
+    );
     $("coeff_y").addEventListener("input", onInputChange);
     $("material").addEventListener("change", onInputChange);
     $("weld_e").addEventListener("change", onInputChange);
@@ -280,7 +312,7 @@ function checkReady() {
 }
 
 function validateCommon() {
-    let ok = true;
+    let ok = validateMillSettings();
 
     for (const id of REF_INPUT_IDS) {
         const el = $(id);
@@ -380,8 +412,26 @@ function readInputs() {
         E: parseFloat($("weld_e").value),
         mat,
         a1,
-        k1
+        k1,
+        mill: readMillSettings()
     };
+}
+
+function buildLogMillSection(inp, D, thick, regime) {
+    const { mill } = inp;
+    const tCalcFmt = formatThickness(thick.tCalculated, regime);
+    const tReqFmt = formatThickness(thick.tRequired, regime);
+    const bandKey = thick.millBand === "large" ? "log.millBandLarge" : "log.millBandSmall";
+    return [
+        "",
+        tEn("log.millBlock"),
+        tEn("log.millBreak", { d: mill.odBreakMm }),
+        tEn("log.millSmall", { pct: mill.tolSmallPct }),
+        tEn("log.millLarge", { pct: mill.tolLargePct }),
+        tEn(bandKey, { d: D.toFixed(1), pct: thick.millPct }),
+        tEn("log.calcT", { t: tCalcFmt }),
+        tEn("log.reqTMill", { tcalc: tCalcFmt, treq: tReqFmt, pct: thick.millPct })
+    ];
 }
 
 function runCalculation() {
@@ -410,12 +460,17 @@ function runCalculation() {
 function runCh2Calculation(inp) {
     const S = inp.a1.bar;
     const { D, denominator, t_pressure, L } = computeSleeveCh2({ ...inp, S });
-    const Ts = t_pressure + inp.CA;
+    const tCalculated = t_pressure + inp.CA;
+    const thick = applyMillTolerance(D, tCalculated, inp.mill);
+    if (!Number.isFinite(thick.tRequired)) {
+        showToast(t("toast.millInvalid"), true);
+        return;
+    }
 
-    renderResults(Ts, L, REGIME.CH2);
+    renderResults(thick, L, REGIME.CH2);
     renderMaterialInfo(inp, D, REGIME.CH2, S);
-    renderLogCh2(inp, D, denominator, t_pressure, Ts, L, S);
-    checkThicknessAdequacy(Ts, inp.THK, REGIME.CH2);
+    renderLogCh2(inp, D, denominator, t_pressure, thick, L, S);
+    checkThicknessAdequacy(thick.tRequired, inp.THK, REGIME.CH2);
     updatePressureUI();
 }
 
@@ -428,11 +483,16 @@ function runCh9Calculation(inp) {
         S
     });
     const L = inp.s + 100;
+    const thick = applyMillTolerance(inp.D, t, inp.mill);
+    if (!Number.isFinite(thick.tRequired)) {
+        showToast(t("toast.millInvalid"), true);
+        return;
+    }
 
-    renderResults(t, L, REGIME.CH9);
+    renderResults(thick, L, REGIME.CH9);
     renderMaterialInfo(inp, inp.D, REGIME.CH9, S);
-    renderLogCh9(inp, S, t, t_pressure, factor, exponent, expTerm, L);
-    checkThicknessAdequacy(t, inp.THK, REGIME.CH9);
+    renderLogCh9(inp, S, t_pressure, thick, factor, exponent, expTerm, L);
+    checkThicknessAdequacy(thick.tRequired, inp.THK, REGIME.CH9);
     updatePressureUI();
 }
 
@@ -456,10 +516,16 @@ function checkThicknessAdequacy(tRequired, THK, regime) {
 
 /* ── Rendering ── */
 
-function renderResults(thickness, L, regime) {
+function renderResults(thick, L, regime) {
     const ids = REGIME_DOM_IDS[regime];
     if (!ids) return;
-    $(ids.outT).textContent = formatThickness(thickness, regime);
+    $(ids.outTCalc).textContent = formatThickness(thick.tCalculated, regime);
+    $(ids.outT).textContent = formatThickness(thick.tRequired, regime);
+    const mill = readMillSettings();
+    const bandKey = thick.millBand === "large" ? "ui.millAppliedLarge" : "ui.millAppliedSmall";
+    const meta = $(ids.outMillMeta);
+    meta.textContent = t(bandKey, { pct: thick.millPct, break: mill.odBreakMm });
+    meta.hidden = false;
     $(ids.outL).textContent = L;
 }
 
@@ -544,8 +610,9 @@ function buildWeldEfficiencyLogNotes(E) {
     return lines;
 }
 
-function renderLogCh2(inp, D, denominator, t_pressure, Ts, L, S) {
+function renderLogCh2(inp, D, denominator, t_pressure, thick, L, S) {
     const { P, CA, Y, E, mat, Tmax, a1, OD, GAP, THK } = inp;
+    const Ts = thick.tCalculated;
     const a1lines = [
         `    Table A-1 (B31.3-2024, SI): S = ${a1.mpa} MPa = ${S} bar`,
         tEn("log.tmaxA1", { tmax: Tmax }),
@@ -577,9 +644,10 @@ function renderLogCh2(inp, D, denominator, t_pressure, Ts, L, S) {
         "    t = (P · D) / (2 · (S · E + P · Y)) + CA",
         `    t_pressure = (${P} × ${D.toFixed(1)}) / (2 × (${S} × ${E} + ${P} × ${Y}))`,
         `    t_pressure = ${(P * D).toFixed(1)} / ${denominator.toFixed(1)} = ${t_pressure.toFixed(1)} mm`,
-        `    t = t_pressure + CA = ${t_pressure.toFixed(1)} + ${CA} = ${Ts.toFixed(1)} mm`,
+        `    t_calculated = t_pressure + CA = ${t_pressure.toFixed(1)} + ${CA} = ${Ts.toFixed(1)} mm`,
+        ...buildLogMillSection(inp, D, thick, REGIME.CH2),
         "",
-        ...buildLogFooter(L, tEn("log.reqT", { t: Ts.toFixed(1) })),
+        ...buildLogFooter(L, tEn("log.reqT", { t: thick.tRequired.toFixed(1) })),
         "",
         ...tEn("log.yNote"),
         "",
@@ -589,8 +657,9 @@ function renderLogCh2(inp, D, denominator, t_pressure, Ts, L, S) {
     $("logContainer").textContent = lines.join("\n");
 }
 
-function renderLogCh9(inp, S, t, t_pressure, factor, exponent, expTerm, L) {
+function renderLogCh9(inp, S, t_pressure, thick, factor, exponent, expTerm, L) {
     const { P, Tmax, CA, OD, GAP, THK, D, mat } = inp;
+    const t = thick.tCalculated;
     const k1 = inp.k1;
     const k1lines = [
         `    Table K-1 (B31.3-2024, SI): S = ${k1.mpa} MPa = ${k1.bar} bar`,
@@ -620,9 +689,10 @@ function renderLogCh9(inp, S, t, t_pressure, factor, exponent, expTerm, L) {
         `    (D − 2·CA) / 2 = (${D.toFixed(1)} − 2×${CA}) / 2 = ${factor.toFixed(4)} mm`,
         `    exp(${exponent.toFixed(6)}) = ${expTerm.toFixed(6)}`,
         `    t_pressure = ${factor.toFixed(4)} × (1 − ${expTerm.toFixed(6)}) = ${t_pressure.toFixed(4)} mm`,
-        `    t = t_pressure + CA = ${t_pressure.toFixed(4)} + ${CA} = ${t.toFixed(4)} mm`,
+        `    t_calculated = t_pressure + CA = ${t_pressure.toFixed(4)} + ${CA} = ${t.toFixed(4)} mm`,
+        ...buildLogMillSection(inp, D, thick, REGIME.CH9),
         "",
-        ...buildLogFooter(L, tEn("log.reqT", { t: t.toFixed(3) })),
+        ...buildLogFooter(L, tEn("log.reqT", { t: thick.tRequired.toFixed(3) })),
         "",
         ...tEn("log.sNoteK1")
     ];

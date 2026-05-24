@@ -33,3 +33,30 @@ function computeCh9Thickness({ D, CA, P, S }) {
     const t = t_pressure + CA;
     return { t, t_pressure, factor, exponent, expTerm };
 }
+
+/**
+ * Mill tolerance fraction f from sleeve OD D [mm] and editable breakpoints (%).
+ * @param {{ odBreakMm: number, tolSmallPct: number, tolLargePct: number }} settings
+ */
+function millToleranceForDiameter(D, settings) {
+    const useLarge = D >= settings.odBreakMm;
+    const pct = useLarge ? settings.tolLargePct : settings.tolSmallPct;
+    return { fraction: pct / 100, pct, band: useLarge ? "large" : "small" };
+}
+
+/** t_required = t_calculated / (1 − f_mill) */
+function thicknessWithMillTolerance(tCalculated, millFraction) {
+    if (!(millFraction >= 0 && millFraction < 1)) return NaN;
+    return tCalculated / (1 - millFraction);
+}
+
+function applyMillTolerance(D, tCalculated, settings) {
+    const mill = millToleranceForDiameter(D, settings);
+    return {
+        tCalculated,
+        tRequired: thicknessWithMillTolerance(tCalculated, mill.fraction),
+        millFraction: mill.fraction,
+        millPct: mill.pct,
+        millBand: mill.band
+    };
+}

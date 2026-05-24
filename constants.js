@@ -11,3 +11,9 @@ const LOG_RULE = "════════════════════�
 
 const BASE_INPUT_IDS = ["defect_s", "defect_c", "thk", "od", "gap", "corrosion_ca", "mawp", "tmax"];
 const REF_INPUT_IDS = ["paz", "avis"];
+
+/** Totalenergies wall-thickness sheet (GS): D < 18" NPS → 12.5%, D >= 18" NPS → 8% */
+const MILL_DEFAULT_OD_BREAK_MM = 457.2;
+const MILL_DEFAULT_TOL_SMALL_PCT = 12.5;
+const MILL_DEFAULT_TOL_LARGE_PCT = 8.0;
+const MILL_INPUT_IDS = ["mill_od_break", "mill_tol_small", "mill_tol_large"];

@@ -9,6 +9,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 ### Changed
 
 - Main entry is `index.html` (`/`). `SleeveCalc.html` redirects for old links.
+- Results distinguish **t_calculated** (formula + CA) and **t_required** (÷ (1 − mill tolerance)); editable mill % with Totalenergies defaults (12.5% / 8% at D = 457.2 mm). THK check uses t_required.
 
 ## [1.1.0] - 2026-05-23
 
