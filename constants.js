@@ -2,7 +2,7 @@
 const P_HP_THRESHOLD_BAR = 690;
 
 /** Semantic version — update with each release; see CHANGELOG.md */
-const APP_VERSION = "1.1.0";
+const APP_VERSION = "1.2.0";
 const CODE_BASIS = "ASME B31.3-2024 (Table A-1 / K-1, SI)";
 
 const REGIME = { CH2: "ch2", CH9: "ch9" };

@@ -4,12 +4,16 @@ All notable changes to the PCC-2 Sleeve Type B web calculator are documented her
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.2.0] - 2026-05-24
+
+### Added
+
+- **t_calculated** vs **t_required** with editable mill tolerance (Totalenergies defaults: 12.5% / 8% at D = 457.2 mm). THK check uses t_required.
 
 ### Changed
 
-- Main entry is `index.html` (`/`). `SleeveCalc.html` redirects for old links.
-- Results distinguish **t_calculated** (formula + CA) and **t_required** (÷ (1 − mill tolerance)); editable mill % with Totalenergies defaults (12.5% / 8% at D = 457.2 mm). THK check uses t_required.
+- Main entry is `index.html` (`/`); `SleeveCalc.html` redirects for legacy URLs.
+- Mill tolerance field labels use plain language (no visible `&lt;` entities).
 
 ## [1.1.0] - 2026-05-23
 
@@ -23,6 +27,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 ### Changed
 
 - Header toolbar: language switcher (EN/PL/FR/PT) and theme toggle.
+
+[1.2.0]: https://github.com/Agrestor666/pcc2-sleeve-calc/releases/tag/v1.2.0
 
 [1.1.0]: https://github.com/Agrestor666/pcc2-sleeve-calc/releases/tag/v1.1.0
 
